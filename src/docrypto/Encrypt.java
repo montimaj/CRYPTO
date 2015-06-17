@@ -62,6 +62,8 @@ public class Encrypt
 		try
 		{
 			int nrows=s.length()/8;
+			if(s.length()>(nrows*ncols))
+				nrows++;
 			char mat[][]=new char[nrows][ncols];
 			boolean flag[][]=new boolean[nrows][ncols];
 			col_transpose(s, nrows, mat, flag);
