@@ -12,7 +12,8 @@ public class UserInput {
 			byte b[]=new byte[fis.available()];
 			fis.read(b);
 			fis.close();	
-			Encrypt.encrypt_file(new String(b));
+			Encrypt.encrypt_file("AB");
+			Decrypt.decrypt("cipher_text.txt");
 		}
 		catch(Exception e)
 		{

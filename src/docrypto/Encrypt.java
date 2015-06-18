@@ -1,11 +1,17 @@
 package docrypto;
 
 import java.io.FileOutputStream;
+import java.util.Base64;
 import java.util.Random;
 public class Encrypt 
 {
 	private static int ncols=8;
-	private static void col_transpose(String s, int nrows, char mat[][], boolean flag[][])
+	public static String bitstream;
+	public static int num_cols()
+	{
+		return ncols;
+	}	
+	private static void init_matrices(String s, int nrows, char mat[][], boolean flag[][])
 	{
 		int k=0;		
 		for(int i=0;i<nrows;++i)
@@ -19,9 +25,9 @@ public class Encrypt
 					flag[i][j]=true;
 				}				
 			}
-		}
+		}		
 	}
-	private static String generate_key(int ncols)
+	private static String generate_key()
 	{
 		Random random=new Random();	
 		StringBuilder k=new StringBuilder();
@@ -39,7 +45,7 @@ public class Encrypt
 		}
 		return k.toString();
 	}
-	private static void disp_mat(char mat[][], boolean flag[][], int nrows)
+	public static void disp_mat(char mat[][], boolean flag[][], int nrows)
 	{
 		for(int i=0;i<nrows;++i)
 		{
@@ -56,7 +62,7 @@ public class Encrypt
 			System.out.println();
 		}
 	}
-	private static String cipher_to_bits(String cipher)
+	public static String cipher_to_bits(String cipher)
 	{
 		String bits="";
 		for(int i=0;i<cipher.length();++i)
@@ -77,7 +83,7 @@ public class Encrypt
 		}
 		return cipher_text.toString();
 	}
-	private static String bits_to_ascii(String bits)
+	public static String bits_to_ascii(String bits)
 	{			
 		String ascii="";
 		for(int i=0;i<bits.length();)
@@ -89,7 +95,7 @@ public class Encrypt
 				asc+=c*Math.pow(2, power);
 			}
 			i=j;
-			ascii+=(char)asc+" ";
+			ascii+=(char)asc+"";
 		}
 		return ascii;
 	}
@@ -102,31 +108,29 @@ public class Encrypt
 				nrows++;
 			char mat[][]=new char[nrows][ncols];
 			boolean flag[][]=new boolean[nrows][ncols];
-			col_transpose(s, nrows, mat, flag);
-			String key=generate_key(ncols);	
+			init_matrices(s, nrows, mat, flag);
+			String key=generate_key();	
+			System.out.println(key);
 			FileOutputStream keyfos=new FileOutputStream("key.txt");
 			keyfos.write(key.getBytes());
 			keyfos.close();
-			String cipher=generate_cipher(key,nrows,flag,mat);
-			FileOutputStream cos=new FileOutputStream("cipher_text1.txt");
-			cos.write(cipher.getBytes());		
-			cos.close();
-			String bits=cipher_to_bits(cipher);
-			FileOutputStream bitstream=new FileOutputStream("cipher_bits.txt");			
-			bitstream.write(bits.getBytes());
-			bitstream.close();				
+			String cipher=generate_cipher(key,nrows,flag,mat);			
+			String bits=cipher_to_bits(cipher);			
 			nrows=bits.length()/ncols;
 			if(bits.length()>(nrows*ncols))
 				nrows++;
 			char mat1[][]=new char[nrows][ncols];
 			boolean flag1[][]=new boolean[nrows][ncols];
-			col_transpose(bits, nrows, mat1, flag1);
+			init_matrices(bits, nrows, mat1, flag1);
 			cipher=generate_cipher(key,nrows,flag1,mat1);
-			cipher=bits_to_ascii(cipher);
-			cos=new FileOutputStream("cipher_text2.txt");
+			bitstream=cipher;
+			System.out.println("Cipher= "+cipher);
+			cipher=Base64.getEncoder().encodeToString(bits_to_ascii(cipher).getBytes());			
+			System.out.println("Cipher= "+cipher);
+			FileOutputStream cos=new FileOutputStream("cipher_text.txt");
 			cos.write(cipher.getBytes());		
-			cos.close();	
-			disp_mat(mat1,flag1,nrows);
+			cos.close();			
+			
 		}
 		catch(Exception e)
 		{
