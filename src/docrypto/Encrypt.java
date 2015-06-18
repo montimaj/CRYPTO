@@ -93,7 +93,7 @@ public class Encrypt
 	{
 		try
 		{
-			System.out.println("Plain text= "+s);
+			System.out.println("Plain text=\n"+s);
 			int nrows=s.length()/8;
 			if(s.length()>(nrows*ncols))
 				nrows++;

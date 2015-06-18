@@ -27,7 +27,7 @@ public class Decrypt
 					mat[j][pos]=s.charAt(k++);				
 		}		
 	}	
-	public static void decrypt(String cipher)
+	public static void decrypt(String cipher, String ext)
 	{
 		try
 		{
@@ -55,10 +55,10 @@ public class Decrypt
 			char mat1[][]=new char[nrows][ncols];
 			init_matrices(s, key, nrows, mat1, Encrypt.flag);
 			String decrypted_text=extract_chars(nrows, ncols, mat1, Encrypt.flag);
-			FileOutputStream dos=new FileOutputStream("decrypted_msg.txt");			
+			FileOutputStream dos=new FileOutputStream("decrypted_file"+ext);			
 			dos.write(decrypted_text.getBytes());
 			dos.close();
-			System.out.println("Decrypted text= "+decrypted_text);			
+			System.out.println("Decrypted text=\n"+decrypted_text);			
 		}
 		catch(Exception e)
 		{
