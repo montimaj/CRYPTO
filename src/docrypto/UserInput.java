@@ -8,11 +8,11 @@ public class UserInput {
 	{
 		try
 		{
-			FileInputStream fis=new FileInputStream("foo.txt");
+			FileInputStream fis=new FileInputStream("foo.java");
 			byte b[]=new byte[fis.available()];
 			fis.read(b);
 			fis.close();	
-			Encrypt.encrypt_file("AB");
+			Encrypt.encrypt_file(new String(b));
 			Decrypt.decrypt("cipher_text.txt");
 		}
 		catch(Exception e)
