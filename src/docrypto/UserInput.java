@@ -1,8 +1,10 @@
 package docrypto;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 
-public class UserInput {
+public class UserInput 
+{
 
 	public static void main(String[] args) 
 	{
@@ -16,7 +18,7 @@ public class UserInput {
 			Encrypt.encrypt_file(new String(b));
 			Decrypt.decrypt("cipher_text.txt",ext);
 		}
-		catch(Exception e)
+		catch(IOException e)
 		{
 			e.printStackTrace();
 		}

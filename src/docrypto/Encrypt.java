@@ -1,6 +1,7 @@
 package docrypto;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
@@ -91,41 +92,34 @@ public class Encrypt
 		}
 		return ascii;
 	}
-	public static void encrypt_file(String s)
+	public static void encrypt_file(String s) throws IOException
 	{
-		try
-		{
-			//System.out.println("Plain text=\n"+s);
-			int nrows=s.length()/8;
-			if(s.length()>(nrows*ncols))
-				nrows++;
-			char mat[][]=new char[nrows][ncols];
-			flag=new boolean[nrows][ncols];
-			init_matrices(s, nrows, mat, flag);
-			String key=generate_key();	
-			System.out.println("Randomly generated key= "+key);
-			FileOutputStream keyfos=new FileOutputStream("key.txt");
-			keyfos.write(key.getBytes());
-			keyfos.close();
-			String cipher=generate_cipher(key,nrows,flag,mat);			
-			String bits=cipher_to_bits(cipher);			
-			nrows=bits.length()/ncols;
-			if(bits.length()>(nrows*ncols))
-				nrows++;
-			char mat1[][]=new char[nrows][ncols];
-			flag1=new boolean[nrows][ncols];
-			init_matrices(bits, nrows, mat1, flag1);
-			cipher=generate_cipher(key,nrows,flag1,mat1);				
-			cipher=bits_to_ascii(cipher);		
-			String bcipher=Base64.getEncoder().encodeToString(cipher.getBytes());		
-			System.out.println("Base64 encoded Cipher="+bcipher);
-			FileOutputStream cos=new FileOutputStream("cipher_text.txt");
-			cos.write(bcipher.getBytes());		
-			cos.close();			
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}		
+		//System.out.println("Plain text=\n"+s);
+		int nrows=s.length()/8;
+		if(s.length()>(nrows*ncols))
+			nrows++;
+		char mat[][]=new char[nrows][ncols];
+		flag=new boolean[nrows][ncols];
+		init_matrices(s, nrows, mat, flag);
+		String key=generate_key();	
+		System.out.println("Randomly generated key= "+key);
+		FileOutputStream keyfos=new FileOutputStream("key.txt");
+		keyfos.write(key.getBytes());
+		keyfos.close();
+		String cipher=generate_cipher(key,nrows,flag,mat);			
+		String bits=cipher_to_bits(cipher);			
+		nrows=bits.length()/ncols;
+		if(bits.length()>(nrows*ncols))
+			nrows++;
+		char mat1[][]=new char[nrows][ncols];
+		flag1=new boolean[nrows][ncols];
+		init_matrices(bits, nrows, mat1, flag1);
+		cipher=generate_cipher(key,nrows,flag1,mat1);				
+		cipher=bits_to_ascii(cipher);		
+		String bcipher=Base64.getEncoder().encodeToString(cipher.getBytes());		
+		System.out.println("Base64 encoded Cipher="+bcipher);
+		FileOutputStream cos=new FileOutputStream("cipher_text.txt");
+		cos.write(bcipher.getBytes());		
+		cos.close();				
 	}
 }
