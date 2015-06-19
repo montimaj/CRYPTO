@@ -3,6 +3,7 @@ package docrypto;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Base64;
+
 public class Decrypt 
 {
 	private static String extract_chars(int nrows, int ncols, char mat[][], boolean flag[][])
@@ -58,7 +59,7 @@ public class Decrypt
 			FileOutputStream dos=new FileOutputStream("decrypted_file"+ext);			
 			dos.write(decrypted_text.getBytes());
 			dos.close();
-			System.out.println("Decrypted text=\n"+decrypted_text);			
+			//System.out.println("Decrypted text=\n"+decrypted_text);			
 		}
 		catch(Exception e)
 		{

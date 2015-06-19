@@ -1,12 +1,14 @@
 package docrypto;
 
 import java.io.FileOutputStream;
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.Base64;
+
 public class Encrypt 
 {
 	private static int ncols=8;	
 	public static boolean flag[][], flag1[][];
+	
 	public static int num_cols()
 	{
 		return ncols;
@@ -28,22 +30,22 @@ public class Encrypt
 		}		
 	}
 	private static String generate_key()
-	{
-		Random random=new Random();	
-		StringBuilder k=new StringBuilder();
+	{		
+		SecureRandom srand=new SecureRandom();		
+		String k="";
 		boolean arr[]=new boolean[ncols];	
 		for(int i=0;i<ncols;++i)
 		{			
-			int r=random.nextInt(ncols);
+			int r=srand.nextInt(ncols);
 			if(i==0)
-				k.append(r);
+				k+=r;
 			else if(i>0 && !arr[r])
-				k.append(r);
+				k+=r;
 			else if(arr[r])
 				i--;
 			arr[r]=true;
 		}
-		return k.toString();
+		return k;
 	}	
 	public static String cipher_to_bits(String cipher)
 	{
@@ -61,17 +63,17 @@ public class Encrypt
 	}
 	private static String generate_cipher(String key, int nrows, boolean flag[][], char mat[][])
 	{
-		StringBuilder cipher_text=new StringBuilder();
+		String cipher_text="";
 		for(int i=0;i<key.length();++i)
 		{
 			int pos=(int)key.charAt(i)-48;
 			for(int j=0;j<nrows;++j)
 			{					
 				if(flag[j][pos])
-					cipher_text.append(mat[j][pos]);
+					cipher_text+=mat[j][pos];
 			}
 		}
-		return cipher_text.toString();
+		return cipher_text;
 	}
 	public static String bits_to_ascii(String bits)
 	{			
@@ -93,7 +95,7 @@ public class Encrypt
 	{
 		try
 		{
-			System.out.println("Plain text=\n"+s);
+			//System.out.println("Plain text=\n"+s);
 			int nrows=s.length()/8;
 			if(s.length()>(nrows*ncols))
 				nrows++;
