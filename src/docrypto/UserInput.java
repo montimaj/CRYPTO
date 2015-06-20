@@ -3,6 +3,7 @@ package docrypto;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import docrypto.utilities.*;
 public class UserInput 
 {
 
@@ -16,7 +17,10 @@ public class UserInput
 			fis.read(b);
 			fis.close();	
 			Encrypt.encrypt_file(new String(b));
-			Decrypt.decrypt("cipher_text.txt",ext);
+			String files[]={"key.txt","cipher_text.txt"};
+			ZipCreator.create_zip("result.zip", files);
+			QRCode.gen_qrcode("result.zip");
+			Decrypt.decrypt("cipher_text.txt",ext);			
 		}
 		catch(IOException e)
 		{
