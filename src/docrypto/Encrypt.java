@@ -90,6 +90,11 @@ public class Encrypt
 		}
 		return cipher_text;
 	}
+	/**
+	 * Converts bits to ASCII
+	 * @param bits Input bits in String format
+	 * @return ASCII string
+	 */
 	public static String bits_to_ascii(String bits)
 	{			
 		String ascii="";
