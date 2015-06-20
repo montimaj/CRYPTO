@@ -4,6 +4,16 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import docrypto.utilities.*;
+
+/**
+ * Takes plain text file path as input and uses 
+ * <p>
+ * {@link docrypto.Encrypt} to generate key.txt and cipher_text.txt
+ * {@link docrypto.utilities.QRCode} to generate qrcode image from result.zip containing the key and the cipher
+ * {@link docrypto.Decrypt} to decrypt
+ * @author Sayantan Majumdar
+ * @since 1.0
+ */
 public class UserInput 
 {
 

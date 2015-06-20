@@ -5,17 +5,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Base64;
 
+/**
+ * Main Decryption module
+ * @author Sayantan Majumdar
+ * @since 1.0
+ */
 public class Decrypt 
 {
 	private static String extract_chars(int nrows, int ncols, char mat[][], boolean flag[][])
 	{
 		String s="";
 		for(int i=0;i<nrows;++i)
-		{
 			for(int j=0;j<ncols;++j)
 				if(flag[i][j])
-					s+=mat[i][j];
-		}
+					s+=mat[i][j];		
 		return s;
 	}
 	private static void init_matrices(String s, String key, int nrows, char mat[][], boolean flag[][])
@@ -28,7 +31,13 @@ public class Decrypt
 				if(k<s.length() && flag[j][pos])
 					mat[j][pos]=s.charAt(k++);				
 		}		
-	}	
+	}
+	/**
+	 * Performs decryption operation
+	 * @param cipher Path to the cipher file
+	 * @param ext Extension of the plain text file
+	 * @throws IOException
+	 */
 	public static void decrypt(String cipher, String ext) throws IOException
 	{
 		FileInputStream cis=new FileInputStream(cipher);

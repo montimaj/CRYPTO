@@ -36,7 +36,7 @@ public class QRCode
 		    String file = "QRCode.png", data = input; 
 		    data=read_from_file(data);  //if this exceeds ~3.8KB for Medium error correction level then Exception will occur    
 		    Map<EncodeHintType, ErrorCorrectionLevel> hint_map1 = new HashMap<EncodeHintType, ErrorCorrectionLevel>();
-		    hint_map1.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.M); //hints used by QRCodeWriter.encode for efficient generation of the QRCode image
+		    hint_map1.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L); //hints used by QRCodeWriter.encode for efficient generation of the QRCode image
 		    createQRCode(data, file,hint_map1,500,500);	
 		    System.out.println("QRCode image= QRCode.png");
 		}

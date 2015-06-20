@@ -5,11 +5,20 @@ import java.io.IOException;
 import java.security.SecureRandom;
 import java.util.Base64;
 
+/**
+ * Main Encryption module
+ * @author Sayantan Majumdar 
+ * @since 1.0
+ */
 public class Encrypt 
 {
 	private static int ncols=8;	
 	public static boolean flag[][], flag1[][];
 	
+	/**
+	 * Method returns number of columns
+	 * @return number of columns 
+	 */
 	public static int num_cols()
 	{
 		return ncols;
@@ -48,6 +57,11 @@ public class Encrypt
 		}
 		return k;
 	}	
+	/**
+	 * Converts ASCII to 8-bit binary string
+	 * @param cipher String containing the cipher text
+	 * @return Binary string
+	 */
 	public static String cipher_to_bits(String cipher)
 	{
 		String bits="";
@@ -92,6 +106,11 @@ public class Encrypt
 		}
 		return ascii;
 	}
+	/**
+	 * Performs the encryption operation
+	 * @param s String containing the plain text
+	 * @throws IOException
+	 */
 	public static void encrypt_file(String s) throws IOException
 	{
 		//System.out.println("Plain text=\n"+s);
@@ -116,8 +135,8 @@ public class Encrypt
 		init_matrices(bits, nrows, mat1, flag1);
 		cipher=generate_cipher(key,nrows,flag1,mat1);				
 		cipher=bits_to_ascii(cipher);		
-		String bcipher=Base64.getEncoder().encodeToString(cipher.getBytes());		
-		System.out.println("Base64 encoded Cipher="+bcipher);
+		String bcipher=Base64.getEncoder().encodeToString(cipher.getBytes());				
+		System.out.println("Base64 encoded Cipher="+bcipher);		
 		FileOutputStream cos=new FileOutputStream("cipher_text.txt");
 		cos.write(bcipher.getBytes());		
 		cos.close();				
