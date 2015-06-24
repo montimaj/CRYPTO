@@ -3,6 +3,7 @@ package docrypto;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.DataInputStream;
 import java.util.Base64;
 
 /**
@@ -21,16 +22,18 @@ public class Decrypt
 					s+=mat[i][j];		
 		return s;
 	}
-	private static void init_matrices(String s, String key, int nrows, char mat[][], boolean flag[][])
+	private static void init_matrices(String s, int nrows, char mat[][], boolean flag[][]) throws IOException
 	{
-		int k=0;		
-		for(int i=0;i<key.length();++i)
+		int k=0;	
+		DataInputStream key=new DataInputStream(new FileInputStream("key.txt"));
+		for(int i=0;i<Encrypt.num_cols();++i)
 		{
-			int pos=key.charAt(i)-48;
+			int pos=key.readInt();
 			for(int j=0;j<nrows;++j)
 				if(k<s.length() && flag[j][pos])
 					mat[j][pos]=s.charAt(k++);				
 		}		
+		key.close();
 	}
 	/**
 	 * Performs decryption operation
@@ -43,28 +46,23 @@ public class Decrypt
 		FileInputStream cis=new FileInputStream(cipher);
 		byte[] b=new byte[cis.available()];
 		cis.read(b);
-		cis.close();
-		FileInputStream kis=new FileInputStream("key.txt");
-		byte[] b1=new byte[kis.available()];
-		kis.read(b1);
-		kis.close();
-		String key=new String(b1);		
+		cis.close();			
 		String bits=new String(Base64.getDecoder().decode(b));	
 		bits=Encrypt.cipher_to_bits(bits);
 		int ncols=Encrypt.num_cols(), nrows=bits.length()/ncols;
 		if(bits.length()>nrows*ncols)
 			nrows++;
 		char mat[][]=new char[nrows][ncols];
-		init_matrices(bits, key, nrows, mat, Encrypt.flag1);			
+		init_matrices(bits, nrows, mat, Encrypt.flag1);			
 		String s=extract_chars(nrows, ncols, mat,Encrypt.flag1);			
 		s=Encrypt.bits_to_ascii(s);			
 		nrows=s.length()/ncols;
 		if(s.length()>nrows*ncols)
 			nrows++;
 		char mat1[][]=new char[nrows][ncols];
-		init_matrices(s, key, nrows, mat1, Encrypt.flag);
+		init_matrices(s, nrows, mat1, Encrypt.flag);
 		String decrypted_text=extract_chars(nrows, ncols, mat1, Encrypt.flag);
-		FileOutputStream dos=new FileOutputStream("decrypted_file"+ext);			
+		FileOutputStream dos=new FileOutputStream("decrypted_file"+ext);		
 		dos.write(decrypted_text.getBytes());
 		dos.close();
 		//System.out.println("Decrypted text=\n"+decrypted_text);		

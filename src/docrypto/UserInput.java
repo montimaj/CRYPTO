@@ -26,10 +26,11 @@ public class UserInput
 			byte b[]=new byte[fis.available()];
 			fis.read(b);
 			fis.close();	
-			Encrypt.encrypt_file(new String(b));
+			String pt=new String(b);
+			Encrypt.encrypt_file(pt);
 			String files[]={"key.txt","cipher_text.txt"};
-			ZipCreator.create_zip("result.zip", files);
-			QRCode.gen_qrcode("result.zip");
+			//ZipCreator.create_zip("result.zip", files);
+			//QRCode.gen_qrcode("result.zip");
 			Decrypt.decrypt("cipher_text.txt",ext);			
 		}
 		catch(IOException e)

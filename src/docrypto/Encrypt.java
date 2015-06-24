@@ -1,7 +1,10 @@
 package docrypto;
 
+import java.io.DataInputStream;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.DataOutputStream;
 import java.security.SecureRandom;
 import java.util.Base64;
 
@@ -12,7 +15,7 @@ import java.util.Base64;
  */
 public class Encrypt 
 {
-	private static int ncols=8;	
+	private static int ncols=256;	
 	public static boolean flag[][], flag1[][];
 	
 	/**
@@ -39,23 +42,31 @@ public class Encrypt
 			}
 		}		
 	}
-	private static String generate_key()
+	private static String generate_key() throws IOException
 	{		
 		SecureRandom srand=new SecureRandom();		
-		String k="";
-		boolean arr[]=new boolean[ncols];	
+		DataOutputStream k=new DataOutputStream(new FileOutputStream("key.txt"));		
+		boolean arr[]=new boolean[ncols];		
+		String key="";
 		for(int i=0;i<ncols;++i)
 		{			
 			int r=srand.nextInt(ncols);
 			if(i==0)
-				k+=r;
+			{
+				k.writeInt(r);
+				key+=r+" ";
+			}
 			else if(i>0 && !arr[r])
-				k+=r;
+			{
+				k.writeInt(r);
+				key+=r+" ";
+			}
 			else if(arr[r])
 				i--;
 			arr[r]=true;
-		}
-		return k;
+		}	
+		k.close();
+		return key;
 	}	
 	/**
 	 * Converts ASCII to 8-bit binary string
@@ -76,18 +87,19 @@ public class Encrypt
 		}		
 		return bits;		
 	}
-	private static String generate_cipher(String key, int nrows, boolean flag[][], char mat[][])
+	private static String generate_cipher(int nrows, boolean flag[][], char mat[][]) throws IOException
 	{
 		String cipher_text="";
-		for(int i=0;i<key.length();++i)
+		DataInputStream key=new DataInputStream(new FileInputStream("key.txt"));
+		for(int i=0;i<ncols;++i)
 		{
-			int pos=(int)key.charAt(i)-48;
+			
+			int pos=key.readInt();
 			for(int j=0;j<nrows;++j)
-			{					
 				if(flag[j][pos])
-					cipher_text+=mat[j][pos];
-			}
+					cipher_text+=mat[j][pos];		
 		}
+		key.close();
 		return cipher_text;
 	}
 	/**
@@ -125,12 +137,9 @@ public class Encrypt
 		char mat[][]=new char[nrows][ncols];
 		flag=new boolean[nrows][ncols];
 		init_matrices(s, nrows, mat, flag);
-		String key=generate_key();	
+		String key=generate_key();
 		System.out.println("Randomly generated key= "+key);
-		FileOutputStream keyfos=new FileOutputStream("key.txt");
-		keyfos.write(key.getBytes());
-		keyfos.close();
-		String cipher=generate_cipher(key,nrows,flag,mat);			
+		String cipher=generate_cipher(nrows,flag,mat);			
 		String bits=cipher_to_bits(cipher);			
 		nrows=bits.length()/ncols;
 		if(bits.length()>(nrows*ncols))
@@ -138,7 +147,7 @@ public class Encrypt
 		char mat1[][]=new char[nrows][ncols];
 		flag1=new boolean[nrows][ncols];
 		init_matrices(bits, nrows, mat1, flag1);
-		cipher=generate_cipher(key,nrows,flag1,mat1);				
+		cipher=generate_cipher(nrows,flag1,mat1);				
 		cipher=bits_to_ascii(cipher);		
 		String bcipher=Base64.getEncoder().encodeToString(cipher.getBytes());				
 		System.out.println("Base64 encoded Cipher="+bcipher);		
