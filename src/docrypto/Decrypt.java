@@ -63,8 +63,7 @@ public class Decrypt
 		init_matrices(s, nrows, mat1, Encrypt.flag);
 		String decrypted_text=extract_chars(nrows, ncols, mat1, Encrypt.flag);
 		FileOutputStream dos=new FileOutputStream("decrypted_file"+ext);		
-		dos.write(decrypted_text.getBytes());
-		dos.close();
-		//System.out.println("Decrypted text=\n"+decrypted_text);		
+		dos.write(decrypted_text.getBytes("ISO-8859-1"));
+		dos.close();				
 	}
 }

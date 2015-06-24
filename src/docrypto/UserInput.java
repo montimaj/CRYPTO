@@ -1,7 +1,9 @@
 package docrypto;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 import docrypto.utilities.*;
 
@@ -26,12 +28,13 @@ public class UserInput
 			byte b[]=new byte[fis.available()];
 			fis.read(b);
 			fis.close();	
-			String pt=new String(b);
+			String pt=new String(b,"ISO-8859-1");			
 			Encrypt.encrypt_file(pt);
-			String files[]={"key.txt","cipher_text.txt"};
+			//String files[]={"key.txt","cipher_text.txt"};
 			//ZipCreator.create_zip("result.zip", files);
 			//QRCode.gen_qrcode("result.zip");
-			Decrypt.decrypt("cipher_text.txt",ext);			
+			Decrypt.decrypt("cipher_text.txt",ext);		
+			System.out.println("Successfully decrypted!");			
 		}
 		catch(IOException e)
 		{
