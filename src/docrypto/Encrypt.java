@@ -15,7 +15,7 @@ import java.util.Base64;
  */
 public class Encrypt 
 {
-	private static int ncols=256;	
+	private static final int ncols=new SecureRandom().nextInt(255)+1;	
 	public static boolean flag[][], flag1[][];
 	
 	/**
@@ -130,8 +130,8 @@ public class Encrypt
 	 */
 	public static void encrypt_file(String s) throws IOException
 	{
-		//System.out.println("Plain text=\n"+s);
-		int nrows=s.length()/8;
+		System.out.println("Number of columns= "+ncols);
+		int nrows=s.length()/ncols;
 		if(s.length()>(nrows*ncols))
 			nrows++;
 		char mat[][]=new char[nrows][ncols];

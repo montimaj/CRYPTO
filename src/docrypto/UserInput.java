@@ -17,6 +17,12 @@ import docrypto.utilities.*;
 public class UserInput 
 {
 
+	/**
+	 * Get execution time in millisecond or second
+	 * @param st Start time
+	 * @param et End Time
+	 * @return Execution Time as a String
+	 */
 	public static String getExecutionTime(long st, long et)
 	{
 		double time=(et-st)/1e+6;
@@ -24,10 +30,14 @@ public class UserInput
 		if(time>=1000.)
 		{
 			time/=1000.;
-			t=time+" s";
+			t=time+" s"; 
 		}					
 		return t;
 	}
+	/**
+	 * Main module 
+	 * @param args Input file path
+	 */
 	public static void main(String[] args) 
 	{
 		try
