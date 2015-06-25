@@ -4,7 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.DataInputStream;
-import java.util.Base64;
 
 /**
  * Main Decryption module
@@ -13,16 +12,15 @@ import java.util.Base64;
  */
 public class Decrypt 
 {
-	private static String extract_chars(int nrows, int ncols, char mat[][], boolean flag[][])
+	private static String extract_chars(int nrows, int ncols, char mat[][])
 	{
 		String s="";
 		for(int i=0;i<nrows;++i)
 			for(int j=0;j<ncols;++j)
-				if(flag[i][j])
-					s+=mat[i][j];		
+				s+=mat[i][j];		
 		return s;
 	}
-	private static void init_matrices(String s, int nrows, char mat[][], boolean flag[][]) throws IOException
+	private static void init_matrices(String s, int nrows, char mat[][]) throws IOException
 	{
 		int k=0;	
 		DataInputStream key=new DataInputStream(new FileInputStream("key.txt"));
@@ -30,10 +28,23 @@ public class Decrypt
 		{
 			int pos=key.readInt();
 			for(int j=0;j<nrows;++j)
-				if(k<s.length() && flag[j][pos])
-					mat[j][pos]=s.charAt(k++);				
+				mat[j][pos]=s.charAt(k++);				
 		}		
 		key.close();
+	}
+	/**
+	 * Trims extra spaces 
+	 * @param s Input String
+	 * @return Right trimmed string
+	 */
+	public static String right_trim(String s)
+	{
+		int i=s.length()-1;
+		while(s.charAt(i--)==' ');
+		String s1="";
+		for(int j=0;j<=i+1;++j)
+			s1+=s.charAt(j);
+		return s1;
 	}
 	/**
 	 * Performs decryption operation
@@ -47,22 +58,19 @@ public class Decrypt
 		byte[] b=new byte[cis.available()];
 		cis.read(b);
 		cis.close();			
-		String bits=new String(Base64.getDecoder().decode(b));	
+		String bits=new String(b);	
 		bits=Encrypt.cipher_to_bits(bits);
-		int ncols=Encrypt.num_cols(), nrows=bits.length()/ncols;
-		if(bits.length()>nrows*ncols)
-			nrows++;
+		int ncols=Encrypt.num_cols(), nrows=bits.length()/ncols;		
 		char mat[][]=new char[nrows][ncols];
-		init_matrices(bits, nrows, mat, Encrypt.flag1);			
-		String s=extract_chars(nrows, ncols, mat,Encrypt.flag1);			
+		init_matrices(bits, nrows, mat);			
+		String s=extract_chars(nrows, ncols, mat);			
 		s=Encrypt.bits_to_ascii(s);			
-		nrows=s.length()/ncols;
-		if(s.length()>nrows*ncols)
-			nrows++;
+		nrows=s.length()/ncols;		
 		char mat1[][]=new char[nrows][ncols];
-		init_matrices(s, nrows, mat1, Encrypt.flag);
-		String decrypted_text=extract_chars(nrows, ncols, mat1, Encrypt.flag);
-		FileOutputStream dos=new FileOutputStream("decrypted_file"+ext);		
+		init_matrices(s, nrows, mat1);
+		String decrypted_text=extract_chars(nrows, ncols, mat1);
+		FileOutputStream dos=new FileOutputStream("decrypted_file"+ext);	
+		decrypted_text=right_trim(decrypted_text);
 		dos.write(decrypted_text.getBytes("ISO-8859-1"));
 		dos.close();				
 	}
