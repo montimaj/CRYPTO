@@ -1,9 +1,7 @@
 package docrypto;
 
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Base64;
 
 import docrypto.utilities.*;
 
@@ -19,6 +17,17 @@ import docrypto.utilities.*;
 public class UserInput 
 {
 
+	public static String getExecutionTime(long st, long et)
+	{
+		double time=(et-st)/1e+6;
+		String t=time+" ms";			
+		if(time>=1000.)
+		{
+			time/=1000.;
+			t=time+" s";
+		}					
+		return t;
+	}
 	public static void main(String[] args) 
 	{
 		try
@@ -28,13 +37,18 @@ public class UserInput
 			byte b[]=new byte[fis.available()];
 			fis.read(b);
 			fis.close();	
-			String pt=new String(b,"ISO-8859-1");			
+			String pt=new String(b, "ISO-8859-1");		
+			long st=System.nanoTime();
 			Encrypt.encrypt_file(pt);
+			long et=System.nanoTime();
+			System.out.println("Encryption time= "+getExecutionTime(st,et));
 			//String files[]={"key.txt","cipher_text.txt"};
 			//ZipCreator.create_zip("result.zip", files);
 			//QRCode.gen_qrcode("result.zip");
-			Decrypt.decrypt("cipher_text.txt",ext);		
-			System.out.println("Successfully decrypted!");			
+			st=System.nanoTime();		
+			Decrypt.decrypt("cipher_text.txt",ext);
+			et=System.nanoTime();			
+			System.out.println("Decryption time= "+getExecutionTime(st,et));
 		}
 		catch(IOException e)
 		{

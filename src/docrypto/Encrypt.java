@@ -149,8 +149,7 @@ public class Encrypt
 		init_matrices(bits, nrows, mat1, flag1);
 		cipher=generate_cipher(nrows,flag1,mat1);				
 		cipher=bits_to_ascii(cipher);		
-		String bcipher=Base64.getEncoder().encodeToString(cipher.getBytes());				
-		System.out.println("Base64 encoded Cipher="+bcipher);		
+		String bcipher=Base64.getEncoder().encodeToString(cipher.getBytes());			
 		FileOutputStream cos=new FileOutputStream("cipher_text.txt");
 		cos.write(bcipher.getBytes());		
 		cos.close();				
