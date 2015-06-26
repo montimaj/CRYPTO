@@ -1,6 +1,5 @@
 package docrypto;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 
 import docrypto.utilities.*;
@@ -38,31 +37,33 @@ public class UserInput
 	 * Main module 
 	 * @param args Input file path
 	 */
-	public static void main(String[] args) 
+	public static void main(String[] args) throws Exception
 	{
+		Process p1=null;
 		try
-		{
-			FileInputStream fis=new FileInputStream(args[0]);
-			String ext=args[0].substring(args[0].lastIndexOf('.'),args[0].length());
-			byte b[]=new byte[fis.available()];
-			fis.read(b);
-			fis.close();	
-			String pt=new String(b, "ISO-8859-1");		
+		{		
+			if(args.length<2 || args[0].isEmpty() || args[1].isEmpty())
+				throw new IOException("Invalid Input");
+			String[] x={"zenity","--progress","--pulsate","--no-cancel","--text=Encrypting..."};
+			p1=new ProcessBuilder(x).start();
 			long st=System.nanoTime();
-			Encrypt.encrypt_file(pt);
+			Encrypt.encrypt_file(args[0],args[1]);
 			long et=System.nanoTime();
-			System.out.println("Encryption time= "+getExecutionTime(st,et));
+			p1.destroy();
+			String time="Encryption time= "+getExecutionTime(st,et), x1[]={"zenity","--info","--title=Result","--text="+time};
+			p1=new ProcessBuilder(x1).start();
+			p1.waitFor();
 			//String files[]={"key.txt","cipher_text.txt"};
 			//ZipCreator.create_zip("result.zip", files);
-			//QRCode.gen_qrcode("result.zip");
-			st=System.nanoTime();		
-			Decrypt.decrypt("cipher_text.txt",ext);
-			et=System.nanoTime();			
-			System.out.println("Decryption time= "+getExecutionTime(st,et));
+			//QRCode.gen_qrcode("result.zip");			
 		}
-		catch(IOException e)
+		catch(Exception e)
 		{
-			e.printStackTrace();
+			if(p1!=null)
+		    	p1.destroy();
+		    String s=Log.create_log(e), x[]={"zenity","--error","--text="+s};
+		    p1=new ProcessBuilder(x).start(); 
+		    p1.waitFor();     
 		}
 	}
 }

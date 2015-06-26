@@ -1,0 +1,10 @@
+#Logs
+Logs/
+
+#Tests
+*.txt
+*.pdf
+*.png
+*.jpg
+
+
