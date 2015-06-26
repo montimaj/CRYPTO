@@ -47,10 +47,11 @@ public class UserInput
 			String[] x={"zenity","--progress","--pulsate","--no-cancel","--text=Encrypting..."};
 			p1=new ProcessBuilder(x).start();
 			long st=System.nanoTime();
-			Encrypt.encrypt_file(args[0],args[1]);
+			String msg=Encrypt.encrypt_file(args[0],args[1]);
 			long et=System.nanoTime();
 			p1.destroy();
-			String time="Encryption time= "+getExecutionTime(st,et), x1[]={"zenity","--info","--title=Result","--text="+time};
+			msg+="\nEncryption time= "+getExecutionTime(st,et);
+			String x1[]={"zenity","--info","--title=Result","--text="+msg};
 			p1=new ProcessBuilder(x1).start();
 			p1.waitFor();
 			//String files[]={"key.txt","cipher_text.txt"};

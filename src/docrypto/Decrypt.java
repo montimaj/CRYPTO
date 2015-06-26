@@ -66,7 +66,7 @@ public class Decrypt
 			if(num[j]>max)
 				max=num[j];		
 		return max+1;		
-	}
+	}	
 	/**
 	 * Performs decryption operation
 	 * @param cipher Path to the cipher file
@@ -90,8 +90,10 @@ public class Decrypt
 		char mat1[][]=new char[nrows][ncols];
 		init_matrices(s, nrows, ncols, num, mat1, keyfile);
 		String decrypted_text=extract_chars(nrows, ncols, mat1);
-		FileOutputStream dos=new FileOutputStream(dir+"/decrypted_"+cipher.substring(cipher.lastIndexOf('_')+1, cipher.length()));	
 		decrypted_text=right_trim(decrypted_text);
+		String ext=decrypted_text.substring(decrypted_text.lastIndexOf('.'), decrypted_text.length());
+		decrypted_text=decrypted_text.substring(0,decrypted_text.lastIndexOf('.'));		
+		FileOutputStream dos=new FileOutputStream(dir+"/decrypted"+cipher.substring(cipher.lastIndexOf('_'), cipher.lastIndexOf('.'))+ext);	
 		dos.write(decrypted_text.getBytes("ISO-8859-1"));
 		dos.close();				
 	}

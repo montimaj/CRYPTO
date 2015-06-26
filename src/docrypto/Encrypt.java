@@ -22,7 +22,7 @@ public class Encrypt
 			for(int j=0;j<ncols;++j)				
 				mat[i][j]=s.charAt(k++);				
 	}
-	private static void generate_key(String s, String dir, int key_arr[]) throws IOException
+	private static String generate_key(String s, String dir, int key_arr[]) throws IOException
 	{		
 		SecureRandom srand=new SecureRandom();		
 		DataOutputStream k=new DataOutputStream(new FileOutputStream(dir+"/key_"+s+".txt"));	
@@ -45,10 +45,11 @@ public class Encrypt
 			arr[r]=true;
 		}	
 		k.close();	
-		System.out.println("Randomly generated key= ");
+		String msg="Randomly generated..."+"\ncolumns="+ncols+"\n\nkey= ";
 		for(int i=0;i<ncols;++i)
-			System.out.print(key_arr[i]+" ");
-		System.out.println();
+			msg+=key_arr[i]+" ";
+		msg+="\n";
+		return msg;		
 	}	
 	/**
 	 * Converts ASCII to 8-bit binary string
@@ -103,14 +104,14 @@ public class Encrypt
 	 * @param s String containing the plain text
 	 * @throws IOException
 	 */
-	public static void encrypt_file(String s, String dir) throws IOException
+	public static String encrypt_file(String s, String dir) throws IOException
 	{		
 		FileInputStream fis=new FileInputStream(s);
 		String ext=s.substring(s.lastIndexOf('.'),s.length());
 		byte b[]=new byte[fis.available()];
 		fis.read(b);
 		fis.close();	
-		String pt=new String(b, "ISO-8859-1");		
+		String pt=new String(b, "ISO-8859-1")+ext;		
 		int len=pt.length(),nrows=len/ncols;
 		if(len>(nrows*ncols))
 			nrows++;
@@ -122,7 +123,7 @@ public class Encrypt
 		init_matrices(pt, nrows, mat);
 		int k[]=new int[ncols];
 		String s1=s.substring(s.lastIndexOf(File.separatorChar)+1,s.lastIndexOf('.'));
-		generate_key(s1,dir,k);		
+		String msg=generate_key(s1,dir,k);		
 		String cipher=generate_cipher(nrows,k,mat);			
 		String bits=cipher_to_bits(cipher);			
 		nrows=bits.length()/ncols;		
@@ -130,8 +131,9 @@ public class Encrypt
 		init_matrices(bits, nrows, mat1);
 		cipher=generate_cipher(nrows,k,mat1);				
 		cipher=bits_to_ascii(cipher);				
-		FileOutputStream cos=new FileOutputStream(dir+"/cipher_"+s1+ext);
+		FileOutputStream cos=new FileOutputStream(dir+"/cipher_"+s1+".txt");
 		cos.write(cipher.getBytes());		
-		cos.close();				
+		cos.close();		
+		return msg;
 	}
 }
