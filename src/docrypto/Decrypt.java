@@ -47,24 +47,27 @@ public class Decrypt
 	private static int get_numcols(String keyfile, int num[]) throws IOException
 	{
 		DataInputStream key=new DataInputStream(new FileInputStream(keyfile));
-		int i=0;
+		int i=0, max=-1;
 		boolean eof=false;
 		while(!eof)
 		{			
 			try
 			{
-				num[i++]=key.readInt();
+				num[i]=key.readInt();
+				if(i==0)
+					max=num[i];
+				else
+					if(max<num[i])
+						max=num[i];
+				++i;
+					
 			}
 			catch(EOFException e)
 			{
 				eof=true;
 				key.close();
 			}
-		}
-		int max=num[0];
-		for(int j=1;j<i;++j)
-			if(num[j]>max)
-				max=num[j];		
+		}		
 		return max+1;		
 	}	
 	/**
