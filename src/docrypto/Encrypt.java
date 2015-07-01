@@ -7,6 +7,11 @@ import java.io.IOException;
 import java.io.DataOutputStream;
 import java.security.SecureRandom;
 
+import com.google.zxing.WriterException;
+
+import docrypto.utilities.QRCode;
+import docrypto.utilities.ZipCreator;
+
 /**
  * Main Encryption module
  * @author Sayantan Majumdar 
@@ -70,7 +75,7 @@ public class Encrypt
 		}		
 		return bits;		
 	}
-	private static String generate_cipher(int nrows, int key[], char mat[][]) throws IOException
+	private static String generate_cipher(int nrows, int key[], char mat[][])
 	{
 		String cipher_text="";		
 		for(int i=0;i<ncols;++i)
@@ -104,8 +109,9 @@ public class Encrypt
 	 * @param s String containing the plain text
 	 * @throws IOException
 	 */
-	public static String encrypt_file(String s, String dir) throws IOException
+	public static String encrypt_file(String s, String dir) throws IOException, WriterException
 	{		
+		long st=System.nanoTime();
 		FileInputStream fis=new FileInputStream(s);
 		String ext=s.substring(s.lastIndexOf('.'),s.length());
 		byte b[]=new byte[fis.available()];
@@ -134,6 +140,15 @@ public class Encrypt
 		FileOutputStream cos=new FileOutputStream(dir+"/cipher_"+s1+".txt");
 		cos.write(cipher.getBytes());		
 		cos.close();		
+		long et=System.nanoTime();		
+		msg+="\nEncryption Time= "+UserInput.getExecutionTime(st, et);		
+		st=System.nanoTime();
+		String files[]={dir+"/key_"+s1+".txt", dir+"/cipher_"+s1+".txt"};
+		String z=dir+"/zipped_"+s1+".zip";
+		ZipCreator.create_zip(z, files);
+		QRCode.gen_qrcode(z, dir, s1);
+		et=System.nanoTime();
+		msg+="\nQRCode generation time= "+UserInput.getExecutionTime(st, et);
 		return msg;
 	}
 }

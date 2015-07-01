@@ -2,7 +2,9 @@ package docrypto;
 
 import java.io.IOException;
 
-import docrypto.utilities.*;
+import com.google.zxing.WriterException;
+
+import docrypto.utilities.Log;
 
 /**
  * Takes plain text file path as input and uses 
@@ -50,15 +52,12 @@ public class UserInput
 			String msg=Encrypt.encrypt_file(args[0],args[1]);
 			long et=System.nanoTime();
 			p1.destroy();
-			msg+="\nEncryption time= "+getExecutionTime(st,et);
+			msg+="\nTotal time= "+getExecutionTime(st,et);
 			String x1[]={"zenity","--info","--title=Result","--text="+msg};
 			p1=new ProcessBuilder(x1).start();
-			p1.waitFor();
-			//String files[]={"key.txt","cipher_text.txt"};
-			//ZipCreator.create_zip("result.zip", files);
-			//QRCode.gen_qrcode("result.zip");			
+			p1.waitFor();			
 		}
-		catch(Exception e)
+		catch(IOException|WriterException e)
 		{
 			if(p1!=null)
 		    	p1.destroy();

@@ -3,7 +3,6 @@ package docrypto.utilities;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,28 +27,19 @@ public class QRCode
 	  * <p>
 	  * input is the path to Result.zip and	    
 	  */
-	public static void gen_qrcode(String input) 
+	public static void gen_qrcode(String input, String dir, String name) throws IOException, WriterException
 	{		
-	    try
-	    {
-			//Base64 is used to encode bytes read from the input file, args[1] is the directory path of the QR image
-		    String file = "QRCode.png", data = input; 
-		    data=read_from_file(data);  //if this exceeds ~3.8KB for Medium error correction level then Exception will occur    
-		    Map<EncodeHintType, ErrorCorrectionLevel> hint_map1 = new HashMap<EncodeHintType, ErrorCorrectionLevel>();
-		    hint_map1.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L); //hints used by QRCodeWriter.encode for efficient generation of the QRCode image
-		    createQRCode(data, file,hint_map1,500,500);	
-		    System.out.println("QRCode image= QRCode.png");
-		}
-	    catch(IOException|WriterException e)
-	    {
-	    	e.printStackTrace();
-	    }
+		String file = dir+"/QRCode_"+name+".png", data = input;		
+		data=read_from_file(data);  //if this exceeds ~4.2KB for Low error correction level then Exception will occur    
+		Map<EncodeHintType, ErrorCorrectionLevel> hint_map1 = new HashMap<EncodeHintType, ErrorCorrectionLevel>();
+		hint_map1.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L); //hints used by QRCodeWriter.encode for efficient generation of the QRCode image
+		createQRCode(data, file,hint_map1,500,500);			
 	}
 	/**
 	  * Reads bytes from input file
 	  * and encodes in {@link java.util.Base64} BarcodeFormat
 	  * @param s Input file path
-	  * @return Base64 encoded String
+	  * @return ISO-8859-1 encoded String
 	  * @throws IOException
 	  */
 	public static String read_from_file(String s) throws IOException
@@ -57,7 +47,7 @@ public class QRCode
 	    FileInputStream fp=new FileInputStream(s);    
 	    byte[] data=new byte[fp.available()];
 	    fp.read(data);
-	    s = Base64.getEncoder().encodeToString(data);
+	    s = new String(data, "ISO-8859-1");
 	    fp.close();
 	    return s;
 	}
@@ -74,7 +64,7 @@ public class QRCode
 	  */
 	public static void createQRCode(String data, String file, Map<EncodeHintType, ErrorCorrectionLevel> hint_map, int qrh, int qrw) throws WriterException, IOException
 	{		
-	    BitMatrix matrix = new QRCodeWriter().encode(data, BarcodeFormat.QR_CODE, qrw, qrh, hint_map); //Zxing libraries--> BitMatrix, MatrixToImageWriter
+	    BitMatrix matrix = new QRCodeWriter().encode(data, BarcodeFormat.QR_CODE, qrw, qrh, hint_map); 
 	    MatrixToImageWriter.writeToFile(matrix, "png",new File(file));
 	}	
 }
