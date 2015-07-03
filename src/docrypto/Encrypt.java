@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.DataOutputStream;
 import java.security.SecureRandom;
 
+import com.google.zxing.ChecksumException;
+import com.google.zxing.FormatException;
+import com.google.zxing.NotFoundException;
 import com.google.zxing.WriterException;
 
 import docrypto.utilities.QRCode;
@@ -108,8 +111,11 @@ public class Encrypt
 	 * Performs the encryption operation
 	 * @param s String containing the plain text
 	 * @throws IOException
+	 * @throws FormatException 
+	 * @throws ChecksumException 
+	 * @throws NotFoundException 
 	 */
-	public static String encrypt_file(String s, String dir) throws IOException, WriterException
+	public static String encrypt_file(String s, String dir) throws IOException, WriterException, NotFoundException, ChecksumException, FormatException
 	{		
 		long st=System.nanoTime();
 		FileInputStream fis=new FileInputStream(s);
