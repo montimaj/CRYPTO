@@ -28,11 +28,8 @@ public class QRCode
 	  *	@param dir Ouput directory 
 	  * @param name File name
 	  * <p>    
-	  * @throws FormatException 
-	  * @throws ChecksumException 
-	  * @throws NotFoundException 
 	  * @throws IOException
-	  * @throws WriterException
+	  * @throws WriterException Generally if input file is too large
 	  */
 	public static void gen_qrcode(String input, String dir, String name) throws IOException, WriterException
 	{		
@@ -41,36 +38,17 @@ public class QRCode
 		Map<EncodeHintType, ErrorCorrectionLevel> hint_map1 = new HashMap<EncodeHintType, ErrorCorrectionLevel>();
 		hint_map1.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);		
 		createQRCode(data,file, hint_map1, 500,500);			
-	}
-	/**
-	  * Reads bytes from input file
-	  * and encodes in {@link Base64} BarcodeFormat
-	  * @param s Input file path
-	  * @return {@link Base64} encoded String
-	  * @throws IOException
-	  */
-	public static String read_from_file(String s) throws IOException
+	}	
+	private static String read_from_file(String s) throws IOException
 	{
 	    FileInputStream fp=new FileInputStream(s);    
 	    byte[] b=new byte[fp.available()];
 	    fp.read(b);
 	    fp.close();
-	    s=Base64.getEncoder().encodeToString(b);
-	    System.out.println("Encoded data length= "+s.length()+"\nString= "+s);
+	    s=Base64.getEncoder().encodeToString(b);	   
 	    return s;
 	}
-	
-	/**
-	  * Generates QRCode.png
-	  * @param data String to be encoded in QRCode
-	  * @param file Output file path
-	  * @param hint_map hints used by {@link QRCodeWriter} for efficiency
-	  * @param qrh Height of QRCode.png
-	  * @param qrw Width of QRCode.png
-	  * @throws WriterException generally if input data is too big
-	  * @throws IOException
-	  */
-	public static void createQRCode(String data, String file, Map<EncodeHintType, ErrorCorrectionLevel> hint_map, int qrh, int qrw) throws WriterException, IOException
+	private static void createQRCode(String data, String file, Map<EncodeHintType, ErrorCorrectionLevel> hint_map, int qrh, int qrw) throws WriterException, IOException
 	{	   
 		BitMatrix matrix = new QRCodeWriter().encode(data, BarcodeFormat.QR_CODE, qrw, qrh, hint_map); 
 	    MatrixToImageWriter.writeToFile(matrix, "png",new File(file));

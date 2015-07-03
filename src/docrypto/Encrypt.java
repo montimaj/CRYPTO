@@ -25,7 +25,7 @@ public class Encrypt
 			for(int j=0;j<ncols;++j)				
 				mat[i][j]=s.charAt(k++);				
 	}
-	private static String generate_key(String s, String dir, int key_arr[]) throws Exception
+	private static String generate_key(String s, String dir, int key_arr[]) throws IOException
 	{		
 		SecureRandom srand=new SecureRandom();		
 		DataOutputStream k=new DataOutputStream(new FileOutputStream(dir+"/key_"+s+".txt"));	
@@ -105,10 +105,7 @@ public class Encrypt
 	/**
 	 * Performs the encryption operation
 	 * @param s String containing the plain text
-	 * @throws IOException
-	 * @throws FormatException 
-	 * @throws ChecksumException 
-	 * @throws NotFoundException 
+	 * @throws Exception	 
 	 */
 	public static String encrypt_file(String s, String dir) throws Exception
 	{		

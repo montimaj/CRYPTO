@@ -2,8 +2,6 @@ package docrypto;
 
 import java.io.IOException;
 
-import com.google.zxing.WriterException;
-
 import docrypto.utilities.Log;
 
 /**
