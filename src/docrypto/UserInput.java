@@ -57,7 +57,7 @@ public class UserInput
 			p1=new ProcessBuilder(x1).start();
 			p1.waitFor();			
 		}
-		catch(IOException|WriterException e)
+		catch(Exception e)
 		{
 			if(p1!=null)
 		    	p1.destroy();

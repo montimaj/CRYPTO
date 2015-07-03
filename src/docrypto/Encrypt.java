@@ -7,11 +7,6 @@ import java.io.IOException;
 import java.io.DataOutputStream;
 import java.security.SecureRandom;
 
-import com.google.zxing.ChecksumException;
-import com.google.zxing.FormatException;
-import com.google.zxing.NotFoundException;
-import com.google.zxing.WriterException;
-
 import docrypto.utilities.QRCode;
 import docrypto.utilities.ZipCreator;
 
@@ -30,7 +25,7 @@ public class Encrypt
 			for(int j=0;j<ncols;++j)				
 				mat[i][j]=s.charAt(k++);				
 	}
-	private static String generate_key(String s, String dir, int key_arr[]) throws IOException
+	private static String generate_key(String s, String dir, int key_arr[]) throws Exception
 	{		
 		SecureRandom srand=new SecureRandom();		
 		DataOutputStream k=new DataOutputStream(new FileOutputStream(dir+"/key_"+s+".txt"));	
@@ -115,7 +110,7 @@ public class Encrypt
 	 * @throws ChecksumException 
 	 * @throws NotFoundException 
 	 */
-	public static String encrypt_file(String s, String dir) throws IOException, WriterException, NotFoundException, ChecksumException, FormatException
+	public static String encrypt_file(String s, String dir) throws Exception
 	{		
 		long st=System.nanoTime();
 		FileInputStream fis=new FileInputStream(s);
