@@ -1,5 +1,5 @@
 # CRYPTO
-A project on symmetric-key cryptography using columnar transpose method
+A project on symmetric-key cryptography using a modified columnar transpose method
 
 Using the GUI:
 
@@ -7,7 +7,7 @@ N.B: Do not modify the contents of the bin folder
 
 Run from bash:
 
-sudo ./docrypto.sh or sudo sh docrypto.sh
+./docrypto.sh or sh docrypto.sh
 
 Dependencies:
 
