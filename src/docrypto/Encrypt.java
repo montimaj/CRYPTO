@@ -23,7 +23,7 @@ public class Encrypt
 		int k=0;		
 		for(int i=0;i<nrows;++i)		
 			for(int j=0;j<ncols;++j)				
-				mat[i][j]=s.charAt(k++);				
+					mat[i][j]=s.charAt(k++);				
 	}
 	private static String generate_key(String s, String dir, int key_arr[]) throws IOException
 	{		
@@ -75,10 +75,11 @@ public class Encrypt
 	}
 	private static String generate_cipher(int nrows, int key[], char mat[][])
 	{
-		String cipher_text="";		
-		for(int i=0;i<ncols;++i)
-			for(int j=0;j<nrows;++j)				
-				cipher_text+=mat[j][key[i]];		
+		String cipher_text="";
+		boolean flag=true;
+		for(int i=0;i<ncols && flag;++i)
+			for(int j=0;j<mat.length;++j)
+				cipher_text+=mat[j][key[i]];
 		return cipher_text;
 	}
 	/**
@@ -115,26 +116,25 @@ public class Encrypt
 		byte b[]=new byte[fis.available()];
 		fis.read(b);
 		fis.close();	
-		String pt=new String(b, "ISO-8859-1")+ext;		
-		int len=pt.length(),nrows=len/ncols;
+		String pt=new String(b, "ISO-8859-1");
+		pt+=ext;		
+		int len=pt.length()*8,nrows=len/ncols;
 		if(len>(nrows*ncols))
-			nrows++;
-		int empty_cells=nrows*ncols-len;
-		if(empty_cells>0)
-			for(int i=0;i<empty_cells;++i)
-				pt+=" ";			
+			nrows++;	
+		int empty_cells=nrows*ncols-len;		
+		for(int i=0;i<empty_cells;++i)
+			pt+=" ";
+		String binary_pt=cipher_to_bits(pt);
 		char mat[][]=new char[nrows][ncols];		
-		init_matrices(pt, nrows, mat);
+		init_matrices(binary_pt, nrows, mat);
 		int k[]=new int[ncols];
 		String s1=s.substring(s.lastIndexOf(File.separatorChar)+1,s.lastIndexOf('.'));
 		String msg=generate_key(s1,dir,k);		
-		String cipher=generate_cipher(nrows,k,mat);			
-		String bits=cipher_to_bits(cipher);			
-		nrows=bits.length()/ncols;		
+		String cipher=generate_cipher(nrows,k,mat);		
 		char mat1[][]=new char[nrows][ncols];		
-		init_matrices(bits, nrows, mat1);
-		cipher=generate_cipher(nrows,k,mat1);				
-		cipher=bits_to_ascii(cipher);				
+		init_matrices(cipher, nrows, mat1);		
+		cipher=generate_cipher(nrows,k,mat1);
+		cipher=bits_to_ascii(cipher);		
 		FileOutputStream cos=new FileOutputStream(dir+"/cipher_"+s1+".txt");
 		cos.write(cipher.getBytes());		
 		cos.close();		

@@ -59,7 +59,7 @@ public class UserInput
 		{
 			if(p1!=null)
 		    	p1.destroy();
-		    String s=Log.create_log(e), x[]={"zenity","--error","--text="+s};
+		    String s=Log.create_log(args[1],e), x[]={"zenity","--error","--text="+s};
 		    p1=new ProcessBuilder(x).start(); 
 		    p1.waitFor();     
 		}

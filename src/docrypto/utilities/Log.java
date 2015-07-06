@@ -1,5 +1,6 @@
 package docrypto.utilities;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -15,27 +16,29 @@ import java.text.SimpleDateFormat;
 public class Log
 {
   /**
-  * Appends exception messages to Log.txt along with the date and time of log generation
+  * Appends exception stacktraces to Log.txt along with the date and time of log generation
   * @param e Exception object 
   * @return Exception message
   */
-  public static String create_log(Exception e)
+  public static String create_log(String dir,Exception e)
   {    
     try
     {     
-      File f=new File("Logs");      
+      File f=new File(dir,"Logs");      
       if(!f.exists()) 
     	  f.mkdir();      
       DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");	   
       Date date = new Date();     
-      String s=dateFormat.format(date)+"-> "+e.toString(); //Write date,time,error message to Log.txt
-      PrintWriter pw=new PrintWriter((new BufferedWriter(new FileWriter("Logs/Log.txt", true)))); //append String to Log.txt
+      String s=dateFormat.format(date)+"-> ";//Write date,time,error message to Log.txt
+      PrintWriter pw=new PrintWriter((new BufferedWriter(new FileWriter(f.toString()+"/Log.txt", true)))); //append String to Log.txt
       pw.println(s);
+      e.printStackTrace(pw);
+      pw.println();
       pw.close();
       s="Oops! Errors have been detected!\n"+e.toString()+"\nCheck: "+f.getAbsolutePath()+" for more details";
       return s;
     }
-    catch(Exception exception)
+    catch(IOException exception)
     {
       System.out.println(exception.getMessage());
     }

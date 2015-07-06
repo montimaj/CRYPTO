@@ -17,33 +17,20 @@ public class Decrypt
 {
 	private static String extract_chars(int nrows, int ncols, char mat[][])
 	{
-		String s="";
-		for(int i=0;i<nrows;++i)
-			for(int j=0;j<ncols;++j)
-				s+=mat[i][j];		
+		String s="";		
+		for(int i=0;i<nrows ;++i)		
+			for(int j=0;j<ncols;++j)			
+				s+=mat[i][j];			
 		return s;
 	}
 	private static void init_matrices(String s, int nrows, int ncols, int num[], char mat[][], String keyfile)
 	{
 		int k=0;		
 		for(int i=0;i<ncols;++i)
-			for(int j=0;j<nrows;++j)				
-				mat[j][num[i]]=s.charAt(k++);		
-	}
-	/**
-	 * Trims extra spaces 
-	 * @param s Input String
-	 * @return Right trimmed string
-	 */
-	public static String right_trim(String s)
-	{
-		int i=s.length()-1;
-		while(s.charAt(i--)==' ');
-		String s1="";
-		for(int j=0;j<=i+1;++j)
-			s1+=s.charAt(j);
-		return s1;
-	}
+			for(int j=0;j<nrows;++j)
+				if(k<s.length())
+					mat[j][num[i]]=s.charAt(k++);		
+	}	
 	private static int get_numcols(String keyfile, int num[]) throws IOException
 	{
 		DataInputStream key=new DataInputStream(new FileInputStream(keyfile));
@@ -69,7 +56,21 @@ public class Decrypt
 			}
 		}		
 		return max+1;		
-	}	
+	}
+	/**
+	 * Trims extra spaces 
+	 * @param s Input String
+	 * @return Right trimmed string
+	 */
+	public static String right_trim(String s)
+	{
+		int i=s.length()-1;		
+		while(s.charAt(i--)==' ');			
+		String s1="";
+		for(int j=0;j<=i+1;++j)
+			s1+=s.charAt(j);		
+		return s1;
+	}
 	/**
 	 * Performs decryption operation
 	 * @param cipher Path to the cipher file
@@ -83,21 +84,19 @@ public class Decrypt
 		cis.read(b);
 		cis.close();			
 		String bits=new String(b);	
-		bits=Encrypt.cipher_to_bits(bits);
+		bits=Encrypt.cipher_to_bits(bits);		
 		int num[]=new int[256],ncols=get_numcols(keyfile, num), nrows=bits.length()/ncols;			
 		char mat[][]=new char[nrows][ncols];
 		init_matrices(bits, nrows, ncols, num, mat, keyfile);			
-		String s=extract_chars(nrows, ncols, mat);			
-		s=Encrypt.bits_to_ascii(s);			
-		nrows=s.length()/ncols;		
+		String s=extract_chars(nrows, ncols, mat);		
 		char mat1[][]=new char[nrows][ncols];
 		init_matrices(s, nrows, ncols, num, mat1, keyfile);
-		String decrypted_text=extract_chars(nrows, ncols, mat1);
-		decrypted_text=right_trim(decrypted_text);
-		String ext=decrypted_text.substring(decrypted_text.lastIndexOf('.'), decrypted_text.length());
-		decrypted_text=decrypted_text.substring(0,decrypted_text.lastIndexOf('.'));		
-		FileOutputStream dos=new FileOutputStream(dir+"/decrypted"+cipher.substring(cipher.lastIndexOf('_'), cipher.lastIndexOf('.'))+ext);	
-		dos.write(decrypted_text.getBytes("ISO-8859-1"));
+		String dt=extract_chars(nrows, ncols, mat1);		
+		dt=right_trim(Encrypt.bits_to_ascii(dt));
+		String ext=dt.substring(dt.lastIndexOf('.'), dt.length());
+		FileOutputStream dos=new FileOutputStream(dir+"/decrypted"+cipher.substring(cipher.lastIndexOf('_'), cipher.lastIndexOf('.'))+ext);
+		dt=dt.substring(0,dt.lastIndexOf('.'));		
+		dos.write(dt.getBytes("ISO-8859-1"));
 		dos.close();				
 	}
 	public static void main(String[] args) throws Exception
@@ -121,7 +120,8 @@ public class Decrypt
 		{
 			if(p1!=null)
 		    	p1.destroy();
-		    String s=Log.create_log(e), x[]={"zenity","--error","--text="+s};
+		    String s=Log.create_log(args[2],e), x[]={"zenity","--error","--text="+s};
+		    e.printStackTrace();
 		    p1=new ProcessBuilder(x).start(); 
 		    p1.waitFor(); 
 		}
