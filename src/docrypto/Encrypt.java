@@ -23,7 +23,7 @@ public class Encrypt
 		int k=0;		
 		for(int i=0;i<nrows;++i)		
 			for(int j=0;j<ncols;++j)				
-					mat[i][j]=s.charAt(k++);				
+				mat[i][j]=s.charAt(k++);				
 	}
 	private static String generate_key(String s, String dir, int key_arr[]) throws IOException
 	{		

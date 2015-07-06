@@ -28,8 +28,7 @@ public class Decrypt
 		int k=0;		
 		for(int i=0;i<ncols;++i)
 			for(int j=0;j<nrows;++j)
-				if(k<s.length())
-					mat[j][num[i]]=s.charAt(k++);		
+				mat[j][num[i]]=s.charAt(k++);		
 	}	
 	private static int get_numcols(String keyfile, int num[]) throws IOException
 	{
