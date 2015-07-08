@@ -18,12 +18,22 @@ import docrypto.utilities.ZipCreator;
 public class Encrypt 
 {
 	private static final int ncols=new SecureRandom().nextInt(255)+1;		
+	public static boolean[][] flag;
 	private static void init_matrices(String s, int nrows, char mat[][])
 	{
 		int k=0;		
-		for(int i=0;i<nrows;++i)		
-			for(int j=0;j<ncols;++j)				
-				mat[i][j]=s.charAt(k++);				
+		for(int i=0;i<nrows;++i)
+		{
+			for(int j=0;j<ncols;++j)
+			{
+				flag[i][j]=false;
+				if(k<s.length())
+				{
+					mat[i][j]=s.charAt(k++);
+					flag[i][j]=true;
+				}
+			}
+		}
 	}
 	private static String generate_key(String s, String dir, int key_arr[]) throws IOException
 	{		
@@ -59,7 +69,7 @@ public class Encrypt
 	 * @param cipher String containing the cipher text
 	 * @return Binary string
 	 */
-	public static String cipher_to_bits(String cipher)
+	public static String String_to_bits(String cipher)
 	{
 		String bits="";
 		for(int i=0;i<cipher.length();++i)
@@ -75,11 +85,11 @@ public class Encrypt
 	}
 	private static String generate_cipher(int nrows, int key[], char mat[][])
 	{
-		String cipher_text="";
-		boolean flag=true;
-		for(int i=0;i<ncols && flag;++i)
-			for(int j=0;j<mat.length;++j)
-				cipher_text+=mat[j][key[i]];
+		String cipher_text="";		
+		for(int i=0;i<ncols;++i)
+			for(int j=0;j<nrows;++j)
+				if(flag[j][key[i]])
+					cipher_text+=mat[j][key[i]];
 		return cipher_text;
 	}
 	/**
@@ -104,6 +114,22 @@ public class Encrypt
 		return ascii;
 	}
 	/**
+	 * Read file contents
+	 * @param s
+	 * @return
+	 * @throws IOException
+	 */
+	public static String read_from_file(String s) throws IOException
+	{
+		FileInputStream fis=new FileInputStream(s);
+		String data="";
+		int c;
+		while((c=fis.read())!=-1)
+			data+=(char)c;
+		fis.close();
+		return data;				
+	}
+	/**
 	 * Performs the encryption operation
 	 * @param s String containing the plain text
 	 * @throws Exception	 
@@ -111,21 +137,19 @@ public class Encrypt
 	public static String encrypt_file(String s, String dir) throws Exception
 	{		
 		long st=System.nanoTime();
-		FileInputStream fis=new FileInputStream(s);
 		String ext=s.substring(s.lastIndexOf('.'),s.length());
-		byte b[]=new byte[fis.available()];
-		fis.read(b);
-		fis.close();	
-		String pt=new String(b, "ISO-8859-1");
-		pt+=ext;		
+		String pt=read_from_file(s);
 		int len=pt.length()*8,nrows=len/ncols;
 		if(len>(nrows*ncols))
-			nrows++;	
+			nrows++;
 		int empty_cells=nrows*ncols-len;		
 		for(int i=0;i<empty_cells;++i)
 			pt+=" ";
-		String binary_pt=cipher_to_bits(pt);
+		String binary_pt=String_to_bits(pt);
+		if(ext.equalsIgnoreCase(".zip"))
+			binary_pt=new String(binary_pt.getBytes(),"ISO-8859-1");
 		char mat[][]=new char[nrows][ncols];		
+		flag=new boolean[nrows][ncols];
 		init_matrices(binary_pt, nrows, mat);
 		int k[]=new int[ncols];
 		String s1=s.substring(s.lastIndexOf(File.separatorChar)+1,s.lastIndexOf('.'));
@@ -135,13 +159,14 @@ public class Encrypt
 		init_matrices(cipher, nrows, mat1);		
 		cipher=generate_cipher(nrows,k,mat1);
 		cipher=bits_to_ascii(cipher);		
-		FileOutputStream cos=new FileOutputStream(dir+"/cipher_"+s1+".txt");
-		cos.write(cipher.getBytes());		
+		FileOutputStream cos=new FileOutputStream(dir+"/cipher_"+s1+ext);
+		for(int i=0;i<cipher.length();++i)
+			cos.write(cipher.charAt(i));
 		cos.close();		
 		long et=System.nanoTime();		
 		msg+="\nEncryption Time= "+UserInput.getExecutionTime(st, et);		
 		st=System.nanoTime();
-		String files[]={dir+"/key_"+s1+".txt", dir+"/cipher_"+s1+".txt"};
+		String files[]={dir+"/key_"+s1+".txt", dir+"/cipher_"+s1+ext};
 		String z=dir+"/zipped_"+s1+".zip";
 		ZipCreator.create_zip(z, files);
 		QRCode.gen_qrcode(z, dir, s1);

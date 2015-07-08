@@ -19,7 +19,7 @@ public class Decrypt
 	{
 		String s="";		
 		for(int i=0;i<nrows ;++i)		
-			for(int j=0;j<ncols;++j)			
+			for(int j=0;j<ncols;++j)				
 				s+=mat[i][j];			
 		return s;
 	}
@@ -27,7 +27,7 @@ public class Decrypt
 	{
 		int k=0;		
 		for(int i=0;i<ncols;++i)
-			for(int j=0;j<nrows;++j)
+			for(int j=0;j<nrows;++j)				
 				mat[j][num[i]]=s.charAt(k++);		
 	}	
 	private static int get_numcols(String keyfile, int num[]) throws IOException
@@ -77,13 +77,9 @@ public class Decrypt
 	 * @throws IOException
 	 */
 	private static void decrypt(String cipher, String keyfile, String dir) throws IOException
-	{
-		FileInputStream cis=new FileInputStream(cipher);
-		byte[] b=new byte[cis.available()];
-		cis.read(b);
-		cis.close();			
-		String bits=new String(b);	
-		bits=Encrypt.cipher_to_bits(bits);		
+	{		
+		String bits=Encrypt.read_from_file(cipher);		
+		bits=Encrypt.String_to_bits(bits);		
 		int num[]=new int[256],ncols=get_numcols(keyfile, num), nrows=bits.length()/ncols;			
 		char mat[][]=new char[nrows][ncols];
 		init_matrices(bits, nrows, ncols, num, mat, keyfile);			
@@ -91,11 +87,14 @@ public class Decrypt
 		char mat1[][]=new char[nrows][ncols];
 		init_matrices(s, nrows, ncols, num, mat1, keyfile);
 		String dt=extract_chars(nrows, ncols, mat1);		
-		dt=right_trim(Encrypt.bits_to_ascii(dt));
-		String ext=dt.substring(dt.lastIndexOf('.'), dt.length());
-		FileOutputStream dos=new FileOutputStream(dir+"/decrypted"+cipher.substring(cipher.lastIndexOf('_'), cipher.lastIndexOf('.'))+ext);
-		dt=dt.substring(0,dt.lastIndexOf('.'));		
-		dos.write(dt.getBytes("ISO-8859-1"));
+		dt=right_trim(Encrypt.bits_to_ascii(dt));		
+		FileOutputStream dos=new FileOutputStream(dir+"/decrypted"+cipher.substring(cipher.lastIndexOf('_'), cipher.length()));
+		String ext=cipher.substring(cipher.lastIndexOf('.'), cipher.length());
+		if(ext.equalsIgnoreCase(".zip"))
+			dos.write(dt.getBytes("ISO-8859-1"));
+		else
+			for(int i=0;i<dt.length();++i)
+				dos.write(dt.charAt(i));
 		dos.close();				
 	}
 	public static void main(String[] args) throws Exception
