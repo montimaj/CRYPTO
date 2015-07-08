@@ -17,23 +17,13 @@ import docrypto.utilities.ZipCreator;
  */
 public class Encrypt 
 {
-	private static final int ncols=new SecureRandom().nextInt(255)+1;		
-	public static boolean[][] flag;
+	private static final int ncols=new SecureRandom().nextInt(255)+1;	
 	private static void init_matrices(String s, int nrows, char mat[][])
 	{
 		int k=0;		
 		for(int i=0;i<nrows;++i)
-		{
-			for(int j=0;j<ncols;++j)
-			{
-				flag[i][j]=false;
-				if(k<s.length())
-				{
-					mat[i][j]=s.charAt(k++);
-					flag[i][j]=true;
-				}
-			}
-		}
+			for(int j=0;j<ncols;++j)			
+				mat[i][j]=s.charAt(k++);		
 	}
 	private static String generate_key(String s, String dir, int key_arr[]) throws IOException
 	{		
@@ -87,9 +77,8 @@ public class Encrypt
 	{
 		String cipher_text="";		
 		for(int i=0;i<ncols;++i)
-			for(int j=0;j<nrows;++j)
-				if(flag[j][key[i]])
-					cipher_text+=mat[j][key[i]];
+			for(int j=0;j<nrows;++j)				
+				cipher_text+=mat[j][key[i]];
 		return cipher_text;
 	}
 	/**
@@ -149,7 +138,6 @@ public class Encrypt
 		if(ext.equalsIgnoreCase(".zip"))
 			binary_pt=new String(binary_pt.getBytes(),"ISO-8859-1");
 		char mat[][]=new char[nrows][ncols];		
-		flag=new boolean[nrows][ncols];
 		init_matrices(binary_pt, nrows, mat);
 		int k[]=new int[ncols];
 		String s1=s.substring(s.lastIndexOf(File.separatorChar)+1,s.lastIndexOf('.'));
