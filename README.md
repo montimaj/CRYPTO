@@ -13,7 +13,7 @@ Dependencies:
 
 -> Linux
 
--> JDK 1.7 or above
+-> JDK 1.8
 
 -> GTK+
 
