@@ -9,8 +9,9 @@ export MAIN_DIALOG='
     
     <vbox>
     <frame Enter Secret Key>
-	  <hbox>
-	    <entry>
+	  <hbox>	  
+	    <entry visibility="false">   
+	      <default>Max 16 chars</default>
 	      <variable>SKEY</variable>
 	    </entry>
 	   </hbox>
@@ -57,9 +58,10 @@ export MAIN_DIALOG='
     <vbox>         
       <expander label="Decryption" expanded="true">
 	<vbox>
-	 <frame Enter Secret Key>
-	  <hbox>
-	    <entry>
+	<frame Enter Secret Key>
+	  <hbox>	  
+	    <entry visibility="false">   
+	      <default>Max 16 chars</default>
 	      <variable>SKEY</variable>
 	    </entry>
 	   </hbox>
