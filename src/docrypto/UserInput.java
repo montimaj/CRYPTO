@@ -42,7 +42,6 @@ public class UserInput
 		Process p1=null;
 		try
 		{			
-			System.out.println(args[0]);
 			if(args.length<3 || args[0].isEmpty() || args[1].isEmpty() || args[2].isEmpty())
 				throw new IOException("Invalid Input");
 			else if(args[0].length()>16 )
