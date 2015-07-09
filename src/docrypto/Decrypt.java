@@ -59,20 +59,6 @@ public class Decrypt
 		return max+1;		
 	}
 	/**
-	 * Trims extra spaces 
-	 * @param s Input String
-	 * @return Right trimmed string
-	 */
-	public static String right_trim(String s)
-	{
-		int i=s.length()-1;		
-		while(s.charAt(i--)==' ');			
-		String s1="";
-		for(int j=0;j<=i+1;++j)
-			s1+=s.charAt(j);		
-		return s1;
-	}
-	/**
 	 * Performs decryption operation
 	 * @param cipher Path to the cipher file
 	 * @param ext Extension of the plain text file

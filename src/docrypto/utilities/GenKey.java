@@ -3,14 +3,26 @@ package docrypto.utilities;
 public class GenKey 
 {
 	private int ncols, nencrypt;
+	/**
+	 *  
+	 * @param s Input secret key string
+	 */
 	public GenKey(String s)
 	{
 		gen_key(s);
 	}
+	/**
+	 * 
+	 * @return number of columns
+	 */
 	public int get_colsize()
 	{
 		return ncols;
 	}
+	/**
+	 * 
+	 * @return number of times the encryption algorithm will have to done
+	 */
 	public int get_encryption_number()
 	{
 		return nencrypt;
