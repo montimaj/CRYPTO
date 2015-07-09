@@ -162,18 +162,15 @@ public class Encrypt
 		if(ext.equalsIgnoreCase(".zip"))
 			binary_pt=new String(binary_pt.getBytes(),"ISO-8859-1");		
 		boolean flag[][]=new boolean[nrows][ncols];
-		init_matrix(binary_pt,nrows,ncols, flag);
-		char mat[][]=new char[nrows][ncols];	
-		init_matrix(binary_pt, nrows, mat);
+		init_matrix(binary_pt,nrows,ncols, flag);			
 		int k[]=new int[ncols];
 		String s1=s.substring(s.lastIndexOf(File.separatorChar)+1,s.lastIndexOf('.'));
-		String msg=generate_key(s1,dir,k);	
-		String cipher="";
+		String msg=generate_key(s1,dir,k), cipher=binary_pt;
+		char mat[][]=new char[nrows][ncols];
 		for(int i=0;i<nencrypt;++i)
 		{
-			cipher=generate_cipher(nrows,k,mat, flag);		
-			if(i+1<nencrypt)
-				init_matrix(cipher, nrows, mat);		
+			init_matrix(cipher, nrows, mat);	
+			cipher=generate_cipher(nrows,k,mat, flag);				
 		}		
 		cipher=bits_to_ascii(cipher);		
 		FileOutputStream cos=new FileOutputStream(dir+"/cipher_"+s1+ext);

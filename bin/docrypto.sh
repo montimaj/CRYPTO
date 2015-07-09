@@ -48,7 +48,7 @@ export MAIN_DIALOG='
 	  <height>20</height>
 	  <width>40</width>
 	  <label>Encrypt</label>
-	  <action signal="clicked">clear; java docrypto.UserInput "$SKEY" "$FILE" "$FILE_DIRECTORY"</action>
+	  <action signal="clicked">clear;java docrypto.UserInput "$SKEY" "$FILE" "$FILE_DIRECTORY"</action>
 	  <variable>"flag"</variable>
 	</button>
       </vbox>
@@ -62,7 +62,7 @@ export MAIN_DIALOG='
 	  <hbox>	  
 	    <entry visibility="false">   
 	      <default>Max 16 chars</default>
-	      <variable>SKEY</variable>
+	      <variable>SSKEY</variable>
 	    </entry>
 	   </hbox>
      </frame>
@@ -111,7 +111,7 @@ export MAIN_DIALOG='
 	      <height>20</height>
 	      <width>40</width>
 	      <label>Decrypt</label>
-	      <action signal="clicked">java docrypto.Decrypt "$SKEY" "$XFILE" "$KEY" "$DIR"</action>
+	      <action signal="clicked">clear;java docrypto.Decrypt "$SSKEY" "$XFILE" "$KEY" "$DIR"</action>
 	    </button>
 	  </vbox>
 	 </vbox>
