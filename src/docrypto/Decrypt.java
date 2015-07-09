@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.DataInputStream;
 
+import docrypto.utilities.GenKey;
 import docrypto.utilities.Log;
 
 /**
@@ -15,20 +16,22 @@ import docrypto.utilities.Log;
  */
 public class Decrypt 
 {
-	private static String extract_chars(int nrows, int ncols, char mat[][])
+	private static String extract_chars(int nrows, int ncols, char mat[][], boolean flag[][])
 	{
 		String s="";		
 		for(int i=0;i<nrows ;++i)		
-			for(int j=0;j<ncols;++j)				
-				s+=mat[i][j];			
+			for(int j=0;j<ncols;++j)	
+				if(flag[i][j])
+					s+=mat[i][j];		
 		return s;
 	}
-	private static void init_matrices(String s, int nrows, int ncols, int num[], char mat[][], String keyfile)
+	private static void init_matrix(String s, int nrows, int ncols, int num[], char mat[][], boolean flag[][], String keyfile)
 	{
 		int k=0;		
 		for(int i=0;i<ncols;++i)
-			for(int j=0;j<nrows;++j)				
-				mat[j][num[i]]=s.charAt(k++);		
+			for(int j=0;j<nrows;++j)
+				if(flag[j][num[i]])
+					mat[j][num[i]]=s.charAt(k++);	
 	}	
 	private static int get_numcols(String keyfile, int num[]) throws IOException
 	{
@@ -45,8 +48,7 @@ public class Decrypt
 				else
 					if(max<num[i])
 						max=num[i];
-				++i;
-					
+				++i;					
 			}
 			catch(EOFException e)
 			{
@@ -76,18 +78,22 @@ public class Decrypt
 	 * @param ext Extension of the plain text file
 	 * @throws IOException
 	 */
-	private static void decrypt(String cipher, String keyfile, String dir) throws IOException
+	private static void decrypt(String skey,String cipher, String keyfile, String dir) throws IOException
 	{		
 		String bits=Encrypt.read_from_file(cipher);		
-		bits=Encrypt.String_to_bits(bits);		
-		int num[]=new int[256],ncols=get_numcols(keyfile, num), nrows=bits.length()/ncols;			
+		bits=Encrypt.String_to_bits(bits);	
+		int num[]=new int[256],ncols=get_numcols(keyfile, num), len=bits.length(),nrows=len/ncols, ndecrypt=new GenKey(skey).get_encryption_number();
+		if(len>nrows*ncols)
+			nrows++;		
+		boolean flag[][]=new boolean[nrows][ncols];
+		Encrypt.init_matrix(bits, nrows, ncols, flag);
 		char mat[][]=new char[nrows][ncols];
-		init_matrices(bits, nrows, ncols, num, mat, keyfile);			
-		String s=extract_chars(nrows, ncols, mat);		
-		char mat1[][]=new char[nrows][ncols];
-		init_matrices(s, nrows, ncols, num, mat1, keyfile);
-		String dt=extract_chars(nrows, ncols, mat1);		
-		dt=right_trim(Encrypt.bits_to_ascii(dt));		
+		for(int i=0;i<ndecrypt;++i)
+		{
+			init_matrix(bits, nrows, ncols, num, mat,flag, keyfile);			
+			bits=extract_chars(nrows, ncols, mat, flag);		
+		}		
+		String dt=Encrypt.bits_to_ascii(bits);		
 		FileOutputStream dos=new FileOutputStream(dir+"/decrypted"+cipher.substring(cipher.lastIndexOf('_'), cipher.length()));
 		String ext=cipher.substring(cipher.lastIndexOf('.'), cipher.length());
 		if(ext.equalsIgnoreCase(".zip"))
@@ -95,19 +101,21 @@ public class Decrypt
 		else
 			for(int i=0;i<dt.length();++i)
 				dos.write(dt.charAt(i));
-		dos.close();				
+		dos.close();		
 	}
 	public static void main(String[] args) throws Exception
 	{
 		Process p1=null;
 		try
 		{
-			if(args.length<3 || args[0].isEmpty() || args[1].isEmpty() || args[2].isEmpty())
-				throw new IOException("Invalid input");			
+			if(args.length<4 || args[0].isEmpty() || args[1].isEmpty() || args[2].isEmpty() || args[3].isEmpty())
+				throw new IOException("Invalid input");	
+			else if(args[0].length()>16 )
+				throw new IOException("Secret key length must be between 1-16");			
 			String[] x={"zenity","--progress","--pulsate","--no-cancel","--text=Decrypting..."};
 			p1=new ProcessBuilder(x).start();
 			long st=System.nanoTime();		
-			decrypt(args[0], args[1], args[2]);
+			decrypt(args[0], args[1], args[2], args[3]);
 			long et=System.nanoTime();	
 			p1.destroy();
 			String time="Decryption time= "+UserInput.getExecutionTime(st,et), x1[]={"zenity","--info","--title=Result","--text="+time};
@@ -118,7 +126,7 @@ public class Decrypt
 		{
 			if(p1!=null)
 		    	p1.destroy();
-		    String s=Log.create_log(args[2],e), x[]={"zenity","--error","--text="+s};
+		    String s=Log.create_log(args[3],e), x[]={"zenity","--error","--text="+s};
 		    e.printStackTrace();
 		    p1=new ProcessBuilder(x).start(); 
 		    p1.waitFor(); 

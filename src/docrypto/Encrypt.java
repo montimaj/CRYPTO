@@ -9,6 +9,7 @@ import java.security.SecureRandom;
 
 import docrypto.utilities.QRCode;
 import docrypto.utilities.ZipCreator;
+import docrypto.utilities.GenKey;
 
 /**
  * Main Encryption module
@@ -17,13 +18,35 @@ import docrypto.utilities.ZipCreator;
  */
 public class Encrypt 
 {
-	private static final int ncols=new SecureRandom().nextInt(255)+1;	
-	private static void init_matrices(String s, int nrows, char mat[][])
+	private static int ncols, nencrypt;	
+	private static void init_matrix(String s, int nrows, char mat[][])
 	{
 		int k=0;		
 		for(int i=0;i<nrows;++i)
-			for(int j=0;j<ncols;++j)			
-				mat[i][j]=s.charAt(k++);		
+			for(int j=0;j<ncols;++j)
+				if(k<s.length())
+					mat[i][j]=s.charAt(k++);					
+	}	
+	
+	/**
+	 * Initialize a boolean flag matrix
+	 * @param s Input String 
+	 * @param nrows row size
+	 * @param ncols column size
+	 * @param flag 2D flag matrix
+	 */
+	public static void init_matrix(String s, int nrows, int ncols, boolean flag[][])
+	{
+		int k=0;
+		for(int i=0;i<nrows;++i)
+		{
+			for(int j=0;j<ncols;++j)
+			{
+				flag[i][j]=false;
+				if(k++<s.length())
+						flag[i][j]=true;
+			}
+		}
 	}
 	private static String generate_key(String s, String dir, int key_arr[]) throws IOException
 	{		
@@ -48,7 +71,7 @@ public class Encrypt
 			arr[r]=true;
 		}	
 		k.close();	
-		String msg="Randomly generated..."+"\ncolumns="+ncols+"\n\nkey= ";
+		String msg="Randomly generated..."+"\ncolumns="+ncols+"\nnencrypt="+nencrypt+"\nkey= ";
 		for(int i=0;i<ncols;++i)
 			msg+=key_arr[i]+" ";
 		msg+="\n";
@@ -73,12 +96,13 @@ public class Encrypt
 		}		
 		return bits;		
 	}
-	private static String generate_cipher(int nrows, int key[], char mat[][])
+	private static String generate_cipher(int nrows, int key[], char mat[][], boolean flag[][])
 	{
 		String cipher_text="";		
 		for(int i=0;i<ncols;++i)
-			for(int j=0;j<nrows;++j)				
-				cipher_text+=mat[j][key[i]];
+			for(int j=0;j<nrows;++j)
+				if(flag[j][key[i]])
+					cipher_text+=mat[j][key[i]];
 		return cipher_text;
 	}
 	/**
@@ -114,38 +138,43 @@ public class Encrypt
 		String data="";
 		int c;
 		while((c=fis.read())!=-1)
-			data+=(char)c;
+			data+=(char)c;		
 		fis.close();
 		return data;				
-	}
+	}	
 	/**
 	 * Performs the encryption operation
 	 * @param s String containing the plain text
 	 * @throws Exception	 
 	 */
-	public static String encrypt_file(String s, String dir) throws Exception
+	public static String encrypt_file(String skey, String s, String dir) throws Exception
 	{		
 		long st=System.nanoTime();
+		GenKey gk=new GenKey(skey);
+		ncols=gk.get_colsize();
+		nencrypt=gk.get_encryption_number();
 		String ext=s.substring(s.lastIndexOf('.'),s.length());
-		String pt=read_from_file(s);
+		String pt=read_from_file(s);		
 		int len=pt.length()*8,nrows=len/ncols;
 		if(len>(nrows*ncols))
-			nrows++;
-		int empty_cells=nrows*ncols-len;		
-		for(int i=0;i<empty_cells;++i)
-			pt+=" ";
-		String binary_pt=String_to_bits(pt);
+			nrows++;		
+		String binary_pt=String_to_bits(pt);		
 		if(ext.equalsIgnoreCase(".zip"))
-			binary_pt=new String(binary_pt.getBytes(),"ISO-8859-1");
-		char mat[][]=new char[nrows][ncols];		
-		init_matrices(binary_pt, nrows, mat);
+			binary_pt=new String(binary_pt.getBytes(),"ISO-8859-1");		
+		boolean flag[][]=new boolean[nrows][ncols];
+		init_matrix(binary_pt,nrows,ncols, flag);
+		char mat[][]=new char[nrows][ncols];	
+		init_matrix(binary_pt, nrows, mat);
 		int k[]=new int[ncols];
 		String s1=s.substring(s.lastIndexOf(File.separatorChar)+1,s.lastIndexOf('.'));
-		String msg=generate_key(s1,dir,k);		
-		String cipher=generate_cipher(nrows,k,mat);		
-		char mat1[][]=new char[nrows][ncols];		
-		init_matrices(cipher, nrows, mat1);		
-		cipher=generate_cipher(nrows,k,mat1);
+		String msg=generate_key(s1,dir,k);	
+		String cipher="";
+		for(int i=0;i<nencrypt;++i)
+		{
+			cipher=generate_cipher(nrows,k,mat, flag);		
+			if(i+1<nencrypt)
+				init_matrix(cipher, nrows, mat);		
+		}		
 		cipher=bits_to_ascii(cipher);		
 		FileOutputStream cos=new FileOutputStream(dir+"/cipher_"+s1+ext);
 		for(int i=0;i<cipher.length();++i)
@@ -159,7 +188,7 @@ public class Encrypt
 		ZipCreator.create_zip(z, files);
 		QRCode.gen_qrcode(z, dir, s1);
 		et=System.nanoTime();
-		msg+="\nQRCode generation time= "+UserInput.getExecutionTime(st, et);
+		msg+="\nQRCode generation time= "+UserInput.getExecutionTime(st, et);	
 		return msg;
 	}
 }

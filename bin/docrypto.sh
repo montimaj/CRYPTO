@@ -8,6 +8,13 @@ export MAIN_DIALOG='
   <notebook labels="Encrypt|Decrypt">
     
     <vbox>
+    <frame Enter Secret Key>
+	  <hbox>
+	    <entry>
+	      <variable>SKEY</variable>
+	    </entry>
+	   </hbox>
+     </frame>
     
     <frame Select Input File>
 	  <hbox>
@@ -40,7 +47,7 @@ export MAIN_DIALOG='
 	  <height>20</height>
 	  <width>40</width>
 	  <label>Encrypt</label>
-	  <action signal="clicked">clear; java docrypto.UserInput "$FILE" "$FILE_DIRECTORY"</action>
+	  <action signal="clicked">clear; java docrypto.UserInput "$SKEY" "$FILE" "$FILE_DIRECTORY"</action>
 	  <variable>"flag"</variable>
 	</button>
       </vbox>
@@ -50,6 +57,13 @@ export MAIN_DIALOG='
     <vbox>         
       <expander label="Decryption" expanded="true">
 	<vbox>
+	 <frame Enter Secret Key>
+	  <hbox>
+	    <entry>
+	      <variable>SKEY</variable>
+	    </entry>
+	   </hbox>
+     </frame>
 	  <frame Choose File to be Decrypted>
 	    <hbox>
 	      <entry>
@@ -95,7 +109,7 @@ export MAIN_DIALOG='
 	      <height>20</height>
 	      <width>40</width>
 	      <label>Decrypt</label>
-	      <action signal="clicked">clear; java docrypto.Decrypt "$XFILE" "$KEY" "$DIR"</action>
+	      <action signal="clicked">java docrypto.Decrypt "$SKEY" "$XFILE" "$KEY" "$DIR"</action>
 	    </button>
 	  </vbox>
 	 </vbox>

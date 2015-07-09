@@ -41,13 +41,15 @@ public class UserInput
 	{
 		Process p1=null;
 		try
-		{		
-			if(args.length<2 || args[0].isEmpty() || args[1].isEmpty())
+		{			
+			if(args.length<3 || args[0].isEmpty() || args[1].isEmpty() || args[2].isEmpty())
 				throw new IOException("Invalid Input");
+			else if(args[0].length()>16 )
+				throw new IOException("Secret key length must be between 1-16");			
 			String[] x={"zenity","--progress","--pulsate","--no-cancel","--text=Encrypting..."};
-			p1=new ProcessBuilder(x).start();
-			long st=System.nanoTime();
-			String msg=Encrypt.encrypt_file(args[0],args[1]);
+			p1=new ProcessBuilder(x).start();			
+			long st=System.nanoTime();		
+			String msg=Encrypt.encrypt_file(args[0],args[1],args[2]);
 			long et=System.nanoTime();
 			p1.destroy();
 			msg+="\nTotal time= "+getExecutionTime(st,et);
@@ -59,7 +61,7 @@ public class UserInput
 		{
 			if(p1!=null)
 		    	p1.destroy();
-		    String s=Log.create_log(args[1],e), x[]={"zenity","--error","--text="+s};
+		    String s=Log.create_log(args[2],e), x[]={"zenity","--error","--text="+s};
 		    p1=new ProcessBuilder(x).start(); 
 		    p1.waitFor();     
 		}
