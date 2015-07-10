@@ -151,11 +151,7 @@ public class Encrypt
 	 * Also encodes the cipher text and key file into a QRCode
 	 * </p>
 	 * @param s String containing the plain text
-	 * @throws IOException
-	 * @throws FormatException 
-	 * @throws ChecksumException 
-	 * @throws NotFoundException 
-	 * @throws WriterException	 
+	 * @throws IOException	 
 	 */
 	public static String encrypt_file(String skey, String s, String dir) throws IOException
 	{		
