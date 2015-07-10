@@ -7,9 +7,7 @@ import docrypto.utilities.Log;
 /**
  * Takes plain text file path as input and uses 
  * <p>
- * {@link docrypto.Encrypt} to generate key.txt and cipher_text.txt
- * {@link docrypto.utilities.QRCode} to generate qrcode image from result.zip containing the key and the cipher
- * {@link docrypto.Decrypt} to decrypt
+ * {@link docrypto.Encrypt} to generate key.txt and cipher_text.txt 
  * @author Sayantan Majumdar
  * @since 1.0
  */
@@ -36,8 +34,10 @@ public class UserInput
 	/**
 	 * Main module 
 	 * @param args Input file path
+	 * @throws InterruptedException 
+	 * @throws IOException 
 	 */
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args) throws InterruptedException, IOException
 	{
 		Process p1=null;
 		try
@@ -57,13 +57,13 @@ public class UserInput
 			p1=new ProcessBuilder(x1).start();
 			p1.waitFor();			
 		}
-		catch(Exception e)
+		catch(IOException e)
 		{
 			if(p1!=null)
 		    	p1.destroy();
 		    String s=Log.create_log(args[2],e), x[]={"zenity","--error","--text="+s};
 		    p1=new ProcessBuilder(x).start(); 
 		    p1.waitFor();     
-		}
+		}		
 	}
 }

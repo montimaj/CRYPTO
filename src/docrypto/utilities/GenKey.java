@@ -62,7 +62,7 @@ public class GenKey
 		nencrypt=(int)(sum%val);		
 		if(nencrypt==0)
 			nencrypt=val;	
-		else if(nencrypt>128)
-			nencrypt=128;
+		else if(nencrypt>64)
+			nencrypt=64;
 	}	
 }

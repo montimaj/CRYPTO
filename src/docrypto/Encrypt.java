@@ -7,12 +7,15 @@ import java.io.IOException;
 import java.io.DataOutputStream;
 import java.security.SecureRandom;
 
+import com.google.zxing.WriterException;
+
 import docrypto.utilities.QRCode;
 import docrypto.utilities.ZipCreator;
 import docrypto.utilities.GenKey;
 
 /**
  * Main Encryption module
+ * Uses {@link docrypto.utilities.QRCode} to generate qrcode image from result.zip containing the key and the cipher
  * @author Sayantan Majumdar 
  * @since 1.0
  */
@@ -29,11 +32,11 @@ public class Encrypt
 	}	
 	
 	/**
-	 * Initialize a boolean flag matrix
+	 * Initializes a 2D boolean flag matrix
 	 * @param s Input String 
 	 * @param nrows row size
 	 * @param ncols column size
-	 * @param flag 2D flag matrix
+	 * @param flag 2D boolean matrix
 	 */
 	public static void init_matrix(String s, int nrows, int ncols, boolean flag[][])
 	{
@@ -71,7 +74,7 @@ public class Encrypt
 			arr[r]=true;
 		}	
 		k.close();	
-		String msg="Randomly generated..."+"\ncolumns="+ncols+"\nnencrypt="+nencrypt+"\nkey= ";
+		String msg="Column size="+ncols+"\nEncryption rounds="+nencrypt+"\nRandom Key= ";
 		for(int i=0;i<ncols;++i)
 			msg+=key_arr[i]+" ";
 		msg+="\n";
@@ -144,10 +147,14 @@ public class Encrypt
 	}	
 	/**
 	 * Performs the encryption operation
+	 * <p>
+	 * Also encodes the cipher text and key file into a QRCode
+	 * </p>
 	 * @param s String containing the plain text
-	 * @throws Exception	 
+	 * @throws IOException
+	 * @throws WriterException	 
 	 */
-	public static String encrypt_file(String skey, String s, String dir) throws Exception
+	public static String encrypt_file(String skey, String s, String dir) throws IOException
 	{		
 		long st=System.nanoTime();
 		GenKey gk=new GenKey(skey);
@@ -178,14 +185,21 @@ public class Encrypt
 			cos.write(cipher.charAt(i));
 		cos.close();		
 		long et=System.nanoTime();		
-		msg+="\nEncryption Time= "+UserInput.getExecutionTime(st, et);		
-		st=System.nanoTime();
-		String files[]={dir+"/key_"+s1+".txt", dir+"/cipher_"+s1+ext};
-		String z=dir+"/zipped_"+s1+".zip";
-		ZipCreator.create_zip(z, files);
-		QRCode.gen_qrcode(z, dir, s1);
-		et=System.nanoTime();
-		msg+="\nQRCode generation time= "+UserInput.getExecutionTime(st, et);	
+		msg+="\nEncryption Time= "+UserInput.getExecutionTime(st, et);
+		try
+		{
+			st=System.nanoTime();
+			String files[]={dir+"/key_"+s1+".txt", dir+"/cipher_"+s1+ext};
+			String z=dir+"/zipped_"+s1+".zip";
+			ZipCreator.create_zip(z, files);
+			QRCode.gen_qrcode(z, dir, s1);
+			et=System.nanoTime();
+			msg+="\nQRCode generation time= "+UserInput.getExecutionTime(st, et);	
+		}
+		catch(WriterException e)
+		{
+			msg+="\nQRCode generation failed: "+e.getMessage();
+		}
 		return msg;
 	}
 }

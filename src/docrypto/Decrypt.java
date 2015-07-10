@@ -95,7 +95,7 @@ public class Decrypt
 				dos.write(dt.charAt(i));
 		dos.close();		
 	}
-	public static void main(String[] args) throws Exception
+	public static void main(String[] args) throws InterruptedException, IOException
 	{
 		Process p1=null;
 		try
@@ -114,12 +114,11 @@ public class Decrypt
 			p1=new ProcessBuilder(x1).start();
 			p1.waitFor();						
 		}		
-		catch(Exception e)
+		catch(IOException e)
 		{
 			if(p1!=null)
 		    	p1.destroy();
 			String s=Log.create_log(args[3],e), x[]={"zenity","--error","--text="+s};
-		    e.printStackTrace();
 		    p1=new ProcessBuilder(x).start(); 
 		    p1.waitFor(); 
 		}
