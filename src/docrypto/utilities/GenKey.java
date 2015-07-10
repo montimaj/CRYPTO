@@ -48,12 +48,9 @@ public class GenKey
 			mat[i]=j--;
 		int base=mat[skey.length()];
 		long sum=0;
-		String s="";
 		for(int i=0;i<skey.length();++i)
-		{
 			sum+=(int)skey.charAt(i)*Math.pow(base, i+1);
-			s+=sum;
-		}
+		String s=""+sum;		
 		int val=calc_nums(s);
 		ncols=(int)(sum%val);		
 		if(ncols==0)
@@ -64,9 +61,8 @@ public class GenKey
 		val=calc_nums(s);
 		nencrypt=(int)(sum%val);		
 		if(nencrypt==0)
-			nencrypt=val;
-		else if(nencrypt>64)
-			nencrypt=64;
-		
+			nencrypt=val;	
+		else if(nencrypt>128)
+			nencrypt=128;
 	}	
 }

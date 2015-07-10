@@ -25,39 +25,43 @@ public class Decrypt
 					s+=mat[i][j];		
 		return s;
 	}
-	private static void init_matrix(String s, int nrows, int ncols, int num[], char mat[][], boolean flag[][], String keyfile)
+	private static void init_matrix(String s, int nrows, int ncols, int num[], char mat[][], boolean flag[][]) throws IOException
 	{
-		int k=0;		
-		for(int i=0;i<ncols;++i)
-			for(int j=0;j<nrows;++j)
-				if(flag[j][num[i]])
-					mat[j][num[i]]=s.charAt(k++);	
-	}	
-	private static int get_numcols(String keyfile, int num[]) throws IOException
+		try
+		{
+			int k=0;		
+			for(int i=0;i<ncols;++i)
+				for(int j=0;j<nrows;++j)
+					if(flag[j][num[i]])
+						mat[j][num[i]]=s.charAt(k++);	
+		}	
+		catch(StringIndexOutOfBoundsException e)
+		{
+			throw new IOException("Invalid Secret Key or input files");
+		}
+	}
+	private static void init_key_array(String keyfile, int num[]) throws IOException
 	{
 		DataInputStream key=new DataInputStream(new FileInputStream(keyfile));
-		int i=0, max=-1;
+		int i=0;
 		boolean eof=false;
 		while(!eof)
 		{			
 			try
 			{
-				num[i]=key.readInt();
-				if(i==0)
-					max=num[i];
-				else
-					if(max<num[i])
-						max=num[i];
-				++i;					
-			}
+				num[i++]=key.readInt();
+			}				
 			catch(EOFException e)
 			{
 				eof=true;
 				key.close();
 			}
-		}		
-		return max+1;		
-	}
+			catch(ArrayIndexOutOfBoundsException e1)
+			{
+				throw new IOException("Invalid Secret Key or input files");
+			}
+		}
+	}		
 	/**
 	 * Performs decryption operation
 	 * @param cipher Path to the cipher file
@@ -67,16 +71,18 @@ public class Decrypt
 	private static void decrypt(String skey,String cipher, String keyfile, String dir) throws IOException
 	{		
 		String bits=Encrypt.read_from_file(cipher);		
-		bits=Encrypt.String_to_bits(bits);	
-		int num[]=new int[256],ncols=get_numcols(keyfile, num), len=bits.length(),nrows=len/ncols, ndecrypt=new GenKey(skey).get_encryption_number();
+		bits=Encrypt.String_to_bits(bits);
+		GenKey gk=new GenKey(skey);		
+		int ncols=gk.get_colsize(),num[]=new int[ncols], len=bits.length(),nrows=len/ncols, ndecrypt=gk.get_encryption_number();
+		init_key_array(keyfile, num);
 		if(len>nrows*ncols)
 			nrows++;		
 		boolean flag[][]=new boolean[nrows][ncols];
 		Encrypt.init_matrix(bits, nrows, ncols, flag);
 		char mat[][]=new char[nrows][ncols];
 		for(int i=0;i<ndecrypt;++i)
-		{
-			init_matrix(bits, nrows, ncols, num, mat,flag, keyfile);			
+		{			
+			init_matrix(bits, nrows, ncols, num, mat,flag);			
 			bits=extract_chars(nrows, ncols, mat, flag);		
 		}		
 		String dt=Encrypt.bits_to_ascii(bits);		
@@ -93,10 +99,10 @@ public class Decrypt
 	{
 		Process p1=null;
 		try
-		{
+		{			
 			if(args.length<4 || args[0].isEmpty() || args[1].isEmpty() || args[2].isEmpty() || args[3].isEmpty())
 				throw new IOException("Invalid input");	
-			else if(args[0].length()>16 )
+			else if(args[0].length()>16)
 				throw new IOException("Secret key length must be between 1-16");			
 			String[] x={"zenity","--progress","--pulsate","--no-cancel","--text=Decrypting..."};
 			p1=new ProcessBuilder(x).start();
@@ -107,12 +113,12 @@ public class Decrypt
 			String time="Decryption time= "+UserInput.getExecutionTime(st,et), x1[]={"zenity","--info","--title=Result","--text="+time};
 			p1=new ProcessBuilder(x1).start();
 			p1.waitFor();						
-		}
+		}		
 		catch(Exception e)
 		{
 			if(p1!=null)
 		    	p1.destroy();
-		    String s=Log.create_log(args[3],e), x[]={"zenity","--error","--text="+s};
+			String s=Log.create_log(args[3],e), x[]={"zenity","--error","--text="+s};
 		    e.printStackTrace();
 		    p1=new ProcessBuilder(x).start(); 
 		    p1.waitFor(); 
