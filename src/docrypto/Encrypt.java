@@ -152,6 +152,9 @@ public class Encrypt
 	 * </p>
 	 * @param s String containing the plain text
 	 * @throws IOException
+	 * @throws FormatException 
+	 * @throws ChecksumException 
+	 * @throws NotFoundException 
 	 * @throws WriterException	 
 	 */
 	public static String encrypt_file(String skey, String s, String dir) throws IOException
