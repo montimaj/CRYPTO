@@ -9,11 +9,14 @@ Run from bash:
 
 ./docrypto.sh or sh docrypto.sh
 
+If this is not working then try running docrypto.sh with super user privileges.
+
+
 Dependencies:
 
 -> Linux
 
--> JDK 1.8
+-> JDK 1.7 or above
 
 -> GTK+
 
