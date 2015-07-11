@@ -159,7 +159,10 @@ public class Encrypt
 		GenKey gk=new GenKey(skey);
 		ncols=gk.get_colsize();
 		nencrypt=gk.get_encryption_number();
-		String ext=s.substring(s.lastIndexOf('.'),s.length());
+		String ext="";
+		int c;
+		if((c=s.lastIndexOf('.'))!=-1)
+			ext=s.substring(c,s.length());
 		String pt=read_from_file(s);		
 		int len=pt.length()*8,nrows=len/ncols;
 		if(len>(nrows*ncols))
@@ -170,8 +173,12 @@ public class Encrypt
 		boolean flag[][]=new boolean[nrows][ncols];
 		init_matrix(binary_pt,nrows,ncols, flag);			
 		int k[]=new int[ncols];
-		String s1=s.substring(s.lastIndexOf(File.separatorChar)+1,s.lastIndexOf('.'));
-		String msg=generate_key(s1,dir,k), cipher=binary_pt;
+		String name;
+		if(c!=-1)
+			name=s.substring(s.lastIndexOf(File.separatorChar)+1,c);
+		else
+			name=s.substring(s.lastIndexOf(File.separatorChar)+1,s.length());
+		String msg=generate_key(name,dir,k), cipher=binary_pt;
 		char mat[][]=new char[nrows][ncols];
 		for(int i=0;i<nencrypt;++i)
 		{
@@ -179,7 +186,7 @@ public class Encrypt
 			cipher=generate_cipher(nrows,k,mat, flag);				
 		}		
 		cipher=bits_to_ascii(cipher);		
-		FileOutputStream cos=new FileOutputStream(dir+"/cipher_"+s1+ext);
+		FileOutputStream cos=new FileOutputStream(dir+"/cipher_"+name+ext);
 		for(int i=0;i<cipher.length();++i)
 			cos.write(cipher.charAt(i));
 		cos.close();		
@@ -188,10 +195,10 @@ public class Encrypt
 		try
 		{
 			st=System.nanoTime();
-			String files[]={dir+"/key_"+s1+".txt", dir+"/cipher_"+s1+ext};
-			String z=dir+"/zipped_"+s1+".zip";
+			String files[]={dir+"/key_"+name+".txt", dir+"/cipher_"+name+ext};
+			String z=dir+"/zipped_"+name+".zip";
 			ZipCreator.create_zip(z, files);
-			QRCode.gen_qrcode(z, dir, s1);
+			QRCode.gen_qrcode(z, dir, name);
 			et=System.nanoTime();
 			msg+="\nQRCode generation time= "+UserInput.getExecutionTime(st, et);	
 		}

@@ -87,7 +87,10 @@ public class Decrypt
 		}		
 		String dt=Encrypt.bits_to_ascii(bits);		
 		FileOutputStream dos=new FileOutputStream(dir+"/decrypted"+cipher.substring(cipher.lastIndexOf('_'), cipher.length()));
-		String ext=cipher.substring(cipher.lastIndexOf('.'), cipher.length());
+		int c;
+		String ext="";
+		if((c=cipher.lastIndexOf('.'))!=-1)
+			ext=cipher.substring(c, cipher.length());
 		if(ext.equalsIgnoreCase(".zip"))
 			dos.write(dt.getBytes("ISO-8859-1"));
 		else
