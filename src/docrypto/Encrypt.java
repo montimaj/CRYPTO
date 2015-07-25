@@ -59,17 +59,12 @@ public class Encrypt
 		for(int i=0;i<ncols;++i)
 		{			
 			int r=srand.nextInt(ncols);
-			if(i==0)
+			if(!arr[r])
 			{
 				key_arr[i]=r;
 				k.writeInt(r);				
-			}
-			else if(i>0 && !arr[r])
-			{
-				key_arr[i]=r;
-				k.writeInt(r);				
-			}
-			else if(arr[r])
+			}			
+			else
 				i--;
 			arr[r]=true;
 		}	
