@@ -7,4 +7,8 @@ Logs/
 *.png
 *.jpg
 
-
+#Eclipse files
+.classpath
+.project
+.directory
+.settings/
